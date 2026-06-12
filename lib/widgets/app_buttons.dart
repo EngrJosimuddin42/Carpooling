@@ -71,8 +71,9 @@ class OutlineButton2 extends StatelessWidget {
   final Widget? icon;
   final FontWeight? fontWeight;
   final double? height;
+  final Color? backgroundColor;
 
-  const OutlineButton2({super.key,this.height, required this.text, this.onPressed,this.borderColor, this.icon, this.textColor,this.fontWeight,
+  const OutlineButton2({super.key,this.height,this.backgroundColor, required this.text, this.onPressed,this.borderColor, this.icon, this.textColor,this.fontWeight,
     this.fontSize,});
 
   @override
@@ -83,6 +84,7 @@ class OutlineButton2 extends StatelessWidget {
       child: OutlinedButton(
         onPressed: onPressed,
         style: OutlinedButton.styleFrom(
+            backgroundColor: backgroundColor,
             side: BorderSide(color: borderColor ?? AppColors.primary, width: 1.3),
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.r))),
         child: Row(

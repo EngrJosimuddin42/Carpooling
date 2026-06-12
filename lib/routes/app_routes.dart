@@ -34,7 +34,7 @@ class AppRoutes {
 }
 
 final appRouter = GoRouter(
-  initialLocation: AppRoutes.home,
+  initialLocation: AppRoutes.profile,
   routes: [
     GoRoute(path: AppRoutes.splash,         builder: (c, s) => const SplashScreen()),
     GoRoute(path: AppRoutes.welcome,        builder: (c, s) => const WelcomeScreen()),

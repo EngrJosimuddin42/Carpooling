@@ -17,6 +17,7 @@ class AppTextField extends StatelessWidget {
   final double? borderRadius;
   final bool readOnly;
   final VoidCallback? onTap;
+  final BoxConstraints? prefixIconConstraints;
 
   const AppTextField({
     super.key,
@@ -34,6 +35,7 @@ class AppTextField extends StatelessWidget {
     this.borderRadius,
     this.readOnly = false,
     this.onTap,
+    this.prefixIconConstraints,
   });
 
   @override

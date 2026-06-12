@@ -8,6 +8,18 @@ class AppData {
 
   final List<ChildModel> children = [];
 
+  // ── User profile ──
+  final ValueNotifier<Map<String, String>> userProfile = ValueNotifier({
+    'name': 'John Doe',
+    'phone': '1712-345678',
+    'address': '123 Main Street, Gulshan, Dhaka',
+    'school': 'Greenfield International School',
+    'bio': '',
+    'emergency': '+880 1823-456789',
+    'avatar': 'assets/images/avatar1.jpg',
+  });
+
+
   // ── Carpools list ──────────────────────────────────────────────────────────
   final ValueNotifier<List<Map<String, dynamic>>> carpools = ValueNotifier([
     {
