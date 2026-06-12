@@ -15,12 +15,14 @@ class PrimaryButton extends StatelessWidget {
   final FontWeight? fontWeight;
   final Widget? icon;
   final double? height;
+  final bool isUnderlined;
 
   const PrimaryButton({
     super.key,
     required this.text,
     this.onPressed,
     this.isLoading = false,
+    this.isUnderlined = false,
     this.backgroundColor,
     this.textColor,
     this.fontSize,
@@ -53,7 +55,11 @@ class PrimaryButton extends StatelessWidget {
               SizedBox(width: 8.w),
             ],
             Text( text,
-                style:AppTextStyles.display.copyWith(color: textColor ?? const Color(0xFFFCFCFC),fontSize: fontSize,fontWeight: fontWeight)),
+                style:AppTextStyles.display.copyWith(
+                    color: textColor ?? const Color(0xFFFCFCFC),
+                    fontSize: fontSize,fontWeight: fontWeight,
+                  decoration: isUnderlined ? TextDecoration.underline : TextDecoration.none,
+                  decorationColor: textColor ?? const Color(0xFFFCFCFC))),
           ],
         ),
       ),
