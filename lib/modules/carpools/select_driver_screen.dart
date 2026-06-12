@@ -1,8 +1,12 @@
 import 'package:carpooling/modules/carpools/ready_to_start_screen.dart';
+import 'package:carpooling/modules/carpools/route_map_screen.dart';
+import 'package:carpooling/modules/carpools/live_tracking_screen.dart';
 import 'package:carpooling/theme/app_colors.dart';
 import 'package:carpooling/theme/app_text_styles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+
+import '../../widgets/app_bottom_nav.dart';
 
 class SelectDriverScreen extends StatefulWidget {
   final Map<String, dynamic> carpool;
@@ -30,12 +34,17 @@ class _SelectDriverScreenState extends State<SelectDriverScreen> {
         elevation: 0,
         scrolledUnderElevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_new, size: 20.sp, color: const Color(0xFF0C0C0C)),
+          icon: Icon(Icons.arrow_back_ios_new,
+              size: 20.sp, color: const Color(0xFF0C0C0C)),
           onPressed: () => Navigator.pop(context),
         ),
         actions: [
-          IconButton(icon: Icon(Icons.edit_outlined, size: 20.sp), onPressed: () {}),
-          IconButton(icon: Icon(Icons.delete_outline, size: 20.sp, color: Colors.red), onPressed: () {}),
+          IconButton(
+              icon: Icon(Icons.edit_outlined, size: 20.sp), onPressed: () {}),
+          IconButton(
+              icon: Icon(Icons.delete_outline,
+                  size: 20.sp, color: Colors.red),
+              onPressed: () {}),
         ],
       ),
       body: SingleChildScrollView(
@@ -48,13 +57,15 @@ class _SelectDriverScreenState extends State<SelectDriverScreen> {
                 Text(widget.carpool['title'], style: AppTextStyles.large),
                 SizedBox(width: 10.w),
                 Container(
-                  padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
+                  padding:
+                  EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
                   decoration: BoxDecoration(
                     color: AppColors.primary.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(20.r),
                   ),
                   child: Text('Upcoming',
-                      style: AppTextStyles.medium.copyWith(color: AppColors.primary)),
+                      style: AppTextStyles.medium
+                          .copyWith(color: AppColors.primary)),
                 ),
               ],
             ),
@@ -77,7 +88,8 @@ class _SelectDriverScreenState extends State<SelectDriverScreen> {
                 decoration: BoxDecoration(
                   color: AppColors.primary.withOpacity(0.08),
                   borderRadius: BorderRadius.circular(12.r),
-                  border: Border.all(color: AppColors.primary.withOpacity(0.2)),
+                  border:
+                  Border.all(color: AppColors.primary.withOpacity(0.2)),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -86,7 +98,8 @@ class _SelectDriverScreenState extends State<SelectDriverScreen> {
                       children: [
                         CircleAvatar(
                           radius: 16.r,
-                          backgroundColor: AppColors.primary.withOpacity(0.2),
+                          backgroundColor:
+                          AppColors.primary.withOpacity(0.2),
                           child: Text(_selectedDriver![0],
                               style: AppTextStyles.medium
                                   .copyWith(color: AppColors.primary)),
@@ -110,8 +123,8 @@ class _SelectDriverScreenState extends State<SelectDriverScreen> {
                             borderRadius: BorderRadius.circular(8.r),
                           ),
                           child: Text('Driver',
-                              style: AppTextStyles.medium
-                                  .copyWith(color: Colors.white, fontSize: 11.sp)),
+                              style: AppTextStyles.medium.copyWith(
+                                  color: Colors.white, fontSize: 11.sp)),
                         ),
                       ],
                     ),
@@ -119,18 +132,21 @@ class _SelectDriverScreenState extends State<SelectDriverScreen> {
                     Text("You are the driver",
                         style: AppTextStyles.title
                             .copyWith(color: AppColors.primary)),
-                    Text("You've been assigned as the driver for this carpool.",
+                    Text(
+                        "You've been assigned as the driver for this carpool.",
                         style: AppTextStyles.medium),
                     SizedBox(height: 10.h),
                     OutlinedButton(
                       style: OutlinedButton.styleFrom(
-                        side: BorderSide(color: Colors.red),
+                        side: const BorderSide(color: Colors.red),
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(8.r)),
                       ),
-                      onPressed: () => setState(() => _selectedDriver = null),
+                      onPressed: () =>
+                          setState(() => _selectedDriver = null),
                       child: Text('Remove Myself as Driver',
-                          style: AppTextStyles.medium.copyWith(color: Colors.red)),
+                          style: AppTextStyles.medium
+                              .copyWith(color: Colors.red)),
                     ),
                   ],
                 ),
@@ -139,17 +155,19 @@ class _SelectDriverScreenState extends State<SelectDriverScreen> {
             // Route
             Text('Route', style: AppTextStyles.title),
             SizedBox(height: 12.h),
-            _routeItem(Icons.circle, AppColors.primary, 'Pickup', '123 Main Street, Cityville'),
+            _routeItem(Icons.circle, AppColors.primary, 'Pickup',
+                '123 Main Street, Cityville'),
             Container(
               margin: EdgeInsets.only(left: 11.w),
-              width: 2, height: 20.h,
+              width: 2,
+              height: 20.h,
               color: Colors.grey.withOpacity(0.3),
             ),
             _routeItem(Icons.location_on, Colors.red, 'Destination',
                 'Lincoln Elementary School, 456 Oak Avenue'),
             SizedBox(height: 16.h),
 
-            // Map button
+            // View on Map button  ← navigates to RouteMapScreen
             SizedBox(
               width: double.infinity,
               child: ElevatedButton.icon(
@@ -158,11 +176,19 @@ class _SelectDriverScreenState extends State<SelectDriverScreen> {
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10.r)),
                   padding: EdgeInsets.symmetric(vertical: 14.h),
+                  elevation: 0,
                 ),
-                icon: Icon(Icons.map_outlined, color: Colors.white, size: 18.sp),
+                icon: Icon(Icons.map_outlined,
+                    color: Colors.white, size: 18.sp),
                 label: Text('View on Map',
-                    style: AppTextStyles.medium.copyWith(color: Colors.white)),
-                onPressed: () {},
+                    style:
+                    AppTextStyles.medium.copyWith(color: Colors.white)),
+                onPressed: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (_) =>
+                          RouteMapScreen(carpool: widget.carpool)),
+                ),
               ),
             ),
             SizedBox(height: 20.h),
@@ -171,7 +197,8 @@ class _SelectDriverScreenState extends State<SelectDriverScreen> {
             Text('Members (${_members.length})', style: AppTextStyles.title),
             SizedBox(height: 12.h),
             ..._members.map((m) => GestureDetector(
-              onTap: () => setState(() => _selectedDriver = m['name']),
+              onTap: () =>
+                  setState(() => _selectedDriver = m['name']),
               child: Container(
                 margin: EdgeInsets.only(bottom: 10.h),
                 padding: EdgeInsets.all(12.w),
@@ -207,12 +234,15 @@ class _SelectDriverScreenState extends State<SelectDriverScreen> {
                       ],
                     ),
                     SizedBox(height: 6.h),
-                    ...(m['children'] as List<String>).map((child) => Padding(
-                      padding: EdgeInsets.only(left: 42.w, bottom: 2.h),
-                      child: Text(child,
-                          style: AppTextStyles.medium
-                              .copyWith(color: Colors.grey)),
-                    )),
+                    ...(m['children'] as List<String>).map(
+                          (child) => Padding(
+                        padding:
+                        EdgeInsets.only(left: 42.w, bottom: 2.h),
+                        child: Text(child,
+                            style: AppTextStyles.medium
+                                .copyWith(color: Colors.grey)),
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -235,18 +265,24 @@ class _SelectDriverScreenState extends State<SelectDriverScreen> {
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10.r)),
                   padding: EdgeInsets.symmetric(vertical: 14.h),
+                  elevation: 0,
                 ),
-                icon: Icon(Icons.play_arrow, color: Colors.white, size: 20.sp),
+                icon: Icon(Icons.play_arrow,
+                    color: Colors.white, size: 20.sp),
                 label: Text('Start Trip',
-                    style: AppTextStyles.medium.copyWith(color: Colors.white)),
+                    style:
+                    AppTextStyles.medium.copyWith(color: Colors.white)),
                 onPressed: () => Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (_) => ReadyToStartScreen(carpool: widget.carpool)),
+                      builder: (_) =>
+                          ReadyToStartScreen(carpool: widget.carpool)),
                 ),
               ),
             ),
             SizedBox(height: 12.h),
+
+            // Chat + Track Live buttons
             Row(
               children: [
                 Expanded(
@@ -273,23 +309,34 @@ class _SelectDriverScreenState extends State<SelectDriverScreen> {
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10.r)),
                       padding: EdgeInsets.symmetric(vertical: 14.h),
+                      elevation: 0,
                     ),
-                    icon: Icon(Icons.location_on, color: Colors.white, size: 18.sp),
+                    icon: Icon(Icons.location_on,
+                        color: Colors.white, size: 18.sp),
                     label: Text('Track Live',
-                        style: AppTextStyles.medium.copyWith(color: Colors.white)),
-                    onPressed: () {},
+                        style: AppTextStyles.medium
+                            .copyWith(color: Colors.white)),
+                    // ← navigates to LiveTrackingScreen
+                    onPressed: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (_) =>
+                              LiveTrackingScreen(carpool: widget.carpool)),
+                    ),
                   ),
                 ),
               ],
             ),
+            SizedBox(height: 24.h),
           ],
         ),
       ),
-      bottomNavigationBar: _buildBottomNav(),
+      bottomNavigationBar: const AppBottomNav(currentIndex: 1),
     );
   }
 
-  Widget _routeItem(IconData icon, Color color, String label, String address) {
+  Widget _routeItem(
+      IconData icon, Color color, String label, String address) {
     return Row(
       children: [
         Icon(icon, color: color, size: 14.sp),
@@ -297,26 +344,12 @@ class _SelectDriverScreenState extends State<SelectDriverScreen> {
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(label, style: AppTextStyles.medium.copyWith(color: Colors.grey)),
+            Text(label,
+                style:
+                AppTextStyles.medium.copyWith(color: Colors.grey)),
             Text(address, style: AppTextStyles.title),
           ],
         ),
-      ],
-    );
-  }
-
-  Widget _buildBottomNav() {
-    return BottomNavigationBar(
-      type: BottomNavigationBarType.fixed,
-      selectedItemColor: AppColors.primary,
-      unselectedItemColor: Colors.grey,
-      currentIndex: 1,
-      items: const [
-        BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-        BottomNavigationBarItem(icon: Icon(Icons.directions_car), label: 'Carpools'),
-        BottomNavigationBarItem(icon: Icon(Icons.inbox), label: 'Inbox'),
-        BottomNavigationBarItem(icon: Icon(Icons.notifications), label: 'Notifications'),
-        BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
       ],
     );
   }

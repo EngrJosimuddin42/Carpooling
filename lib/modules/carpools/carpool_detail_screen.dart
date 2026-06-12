@@ -1,8 +1,12 @@
+import 'package:carpooling/modules/carpools/live_tracking_screen.dart';
+import 'package:carpooling/modules/carpools/route_map_screen.dart';
 import 'package:carpooling/modules/carpools/select_driver_screen.dart';
 import 'package:carpooling/theme/app_colors.dart';
 import 'package:carpooling/theme/app_text_styles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+
+import '../../widgets/app_bottom_nav.dart';
 
 class CarpoolDetailScreen extends StatelessWidget {
   final Map<String, dynamic> carpool;
@@ -37,16 +41,19 @@ class CarpoolDetailScreen extends StatelessWidget {
         elevation: 0,
         scrolledUnderElevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_new, size: 20.sp, color: const Color(0xFF0C0C0C)),
+          icon: Icon(Icons.arrow_back_ios_new,
+              size: 20.sp, color: const Color(0xFF0C0C0C)),
           onPressed: () => Navigator.pop(context),
         ),
         actions: [
           IconButton(
-            icon: Icon(Icons.edit_outlined, size: 20.sp, color: const Color(0xFF0C0C0C)),
+            icon: Icon(Icons.edit_outlined,
+                size: 20.sp, color: const Color(0xFF0C0C0C)),
             onPressed: () {},
           ),
           IconButton(
-            icon: Icon(Icons.delete_outline, size: 20.sp, color: Colors.red),
+            icon: Icon(Icons.delete_outline,
+                size: 20.sp, color: Colors.red),
             onPressed: () {},
           ),
         ],
@@ -56,13 +63,13 @@ class CarpoolDetailScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildHeader(hasDriver),
+            _buildHeader(),
             SizedBox(height: 16.h),
             if (!hasDriver) _buildNoDriverAlert(context),
             SizedBox(height: 16.h),
             _buildRoute(),
             SizedBox(height: 16.h),
-            _buildMapButton(),
+            _buildMapButton(context),   // ← context পাঠানো হচ্ছে
             SizedBox(height: 20.h),
             _buildMembers(),
             SizedBox(height: 20.h),
@@ -73,11 +80,13 @@ class CarpoolDetailScreen extends StatelessWidget {
           ],
         ),
       ),
-      bottomNavigationBar: _buildBottomNav(),
+      bottomNavigationBar: const AppBottomNav(currentIndex: 1),
     );
   }
 
-  Widget _buildHeader(bool hasDriver) {
+  // ─────────────────────────────────────────────────────────────────────────
+
+  Widget _buildHeader() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -92,7 +101,8 @@ class CarpoolDetailScreen extends StatelessWidget {
                 borderRadius: BorderRadius.circular(20.r),
               ),
               child: Text('Upcoming',
-                  style: AppTextStyles.medium.copyWith(color: AppColors.primary)),
+                  style: AppTextStyles.medium
+                      .copyWith(color: AppColors.primary)),
             ),
           ],
         ),
@@ -129,7 +139,8 @@ class CarpoolDetailScreen extends StatelessWidget {
             ],
           ),
           SizedBox(height: 6.h),
-          Text('This carpool needs a driver. Select a member to be the driver.',
+          Text(
+              'This carpool needs a driver. Select a member to be the driver.',
               style: AppTextStyles.medium.copyWith(color: Colors.red)),
           SizedBox(height: 10.h),
           ElevatedButton(
@@ -137,11 +148,13 @@ class CarpoolDetailScreen extends StatelessWidget {
               backgroundColor: Colors.red,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8.r)),
+              elevation: 0,
             ),
             onPressed: () => Navigator.push(
               context,
               MaterialPageRoute(
-                  builder: (_) => SelectDriverScreen(carpool: carpool)),
+                  builder: (_) =>
+                      SelectDriverScreen(carpool: carpool)),
             ),
             child: Text('Become a Driver',
                 style: AppTextStyles.medium.copyWith(color: Colors.white)),
@@ -157,7 +170,8 @@ class CarpoolDetailScreen extends StatelessWidget {
       children: [
         Text('Route', style: AppTextStyles.title),
         SizedBox(height: 12.h),
-        _routeItem(Icons.circle, AppColors.primary, 'Pickup', '123 Main Street, Cityville'),
+        _routeItem(Icons.circle, AppColors.primary, 'Pickup',
+            '123 Main Street, Cityville'),
         Container(
           margin: EdgeInsets.only(left: 11.w),
           width: 2,
@@ -170,7 +184,8 @@ class CarpoolDetailScreen extends StatelessWidget {
     );
   }
 
-  Widget _routeItem(IconData icon, Color color, String label, String address) {
+  Widget _routeItem(
+      IconData icon, Color color, String label, String address) {
     return Row(
       children: [
         Icon(icon, color: color, size: 14.sp),
@@ -178,7 +193,8 @@ class CarpoolDetailScreen extends StatelessWidget {
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(label, style: AppTextStyles.medium.copyWith(color: Colors.grey)),
+            Text(label,
+                style: AppTextStyles.medium.copyWith(color: Colors.grey)),
             Text(address, style: AppTextStyles.title),
           ],
         ),
@@ -186,19 +202,26 @@ class CarpoolDetailScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildMapButton() {
+  // ── View on Map → RouteMapScreen ──────────────────────────────────────────
+  Widget _buildMapButton(BuildContext context) {
     return SizedBox(
       width: double.infinity,
       child: ElevatedButton.icon(
         style: ElevatedButton.styleFrom(
           backgroundColor: AppColors.primary,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.r)),
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10.r)),
           padding: EdgeInsets.symmetric(vertical: 14.h),
+          elevation: 0,
         ),
         icon: Icon(Icons.map_outlined, color: Colors.white, size: 18.sp),
         label: Text('View on Map',
             style: AppTextStyles.medium.copyWith(color: Colors.white)),
-        onPressed: () {},
+        onPressed: () => Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (_) => RouteMapScreen(carpool: carpool)),
+        ),
       ),
     );
   }
@@ -216,7 +239,9 @@ class CarpoolDetailScreen extends StatelessWidget {
             color: Colors.white,
             borderRadius: BorderRadius.circular(10.r),
             boxShadow: [
-              BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 6),
+              BoxShadow(
+                  color: Colors.black.withOpacity(0.04),
+                  blurRadius: 6),
             ],
           ),
           child: Column(
@@ -226,7 +251,8 @@ class CarpoolDetailScreen extends StatelessWidget {
                 children: [
                   CircleAvatar(
                     radius: 16.r,
-                    backgroundColor: AppColors.primary.withOpacity(0.15),
+                    backgroundColor:
+                    AppColors.primary.withOpacity(0.15),
                     child: Text(m['name'][0],
                         style: AppTextStyles.medium
                             .copyWith(color: AppColors.primary)),
@@ -243,26 +269,29 @@ class CarpoolDetailScreen extends StatelessWidget {
                         borderRadius: BorderRadius.circular(10.r),
                       ),
                       child: Text('Driver',
-                          style: AppTextStyles.medium
-                              .copyWith(color: Colors.white, fontSize: 10.sp)),
+                          style: AppTextStyles.medium.copyWith(
+                              color: Colors.white,
+                              fontSize: 10.sp)),
                     ),
                   ],
                 ],
               ),
               SizedBox(height: 6.h),
-              ...(m['children'] as List<String>).map((child) => Padding(
-                padding: EdgeInsets.only(left: 42.w, bottom: 2.h),
-                child: Row(
-                  children: [
-                    Icon(Icons.child_care,
-                        size: 12.sp, color: Colors.grey),
-                    SizedBox(width: 4.w),
-                    Text(child,
-                        style: AppTextStyles.medium
-                            .copyWith(color: Colors.grey)),
-                  ],
+              ...(m['children'] as List<String>).map(
+                    (child) => Padding(
+                  padding: EdgeInsets.only(left: 42.w, bottom: 2.h),
+                  child: Row(
+                    children: [
+                      Icon(Icons.child_care,
+                          size: 12.sp, color: Colors.grey),
+                      SizedBox(width: 4.w),
+                      Text(child,
+                          style: AppTextStyles.medium
+                              .copyWith(color: Colors.grey)),
+                    ],
+                  ),
                 ),
-              )),
+              ),
             ],
           ),
         )),
@@ -282,6 +311,7 @@ class CarpoolDetailScreen extends StatelessWidget {
     );
   }
 
+  // ── Chat + Track Live → LiveTrackingScreen ────────────────────────────────
   Widget _buildActionButtons(BuildContext context) {
     return Row(
       children: [
@@ -293,9 +323,11 @@ class CarpoolDetailScreen extends StatelessWidget {
                   borderRadius: BorderRadius.circular(10.r)),
               padding: EdgeInsets.symmetric(vertical: 14.h),
             ),
-            icon: Icon(Icons.chat_outlined, color: AppColors.primary, size: 18.sp),
+            icon: Icon(Icons.chat_outlined,
+                color: AppColors.primary, size: 18.sp),
             label: Text('Chat',
-                style: AppTextStyles.medium.copyWith(color: AppColors.primary)),
+                style: AppTextStyles.medium
+                    .copyWith(color: AppColors.primary)),
             onPressed: () {},
           ),
         ),
@@ -307,29 +339,21 @@ class CarpoolDetailScreen extends StatelessWidget {
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10.r)),
               padding: EdgeInsets.symmetric(vertical: 14.h),
+              elevation: 0,
             ),
-            icon: Icon(Icons.location_on, color: Colors.white, size: 18.sp),
+            icon: Icon(Icons.location_on,
+                color: Colors.white, size: 18.sp),
             label: Text('Track Live',
-                style: AppTextStyles.medium.copyWith(color: Colors.white)),
-            onPressed: () {},
+                style:
+                AppTextStyles.medium.copyWith(color: Colors.white)),
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (_) =>
+                      LiveTrackingScreen(carpool: carpool)),
+            ),
           ),
         ),
-      ],
-    );
-  }
-
-  Widget _buildBottomNav() {
-    return BottomNavigationBar(
-      type: BottomNavigationBarType.fixed,
-      selectedItemColor: AppColors.primary,
-      unselectedItemColor: Colors.grey,
-      currentIndex: 1,
-      items: const [
-        BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-        BottomNavigationBarItem(icon: Icon(Icons.directions_car), label: 'Carpools'),
-        BottomNavigationBarItem(icon: Icon(Icons.inbox), label: 'Inbox'),
-        BottomNavigationBarItem(icon: Icon(Icons.notifications), label: 'Notifications'),
-        BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
       ],
     );
   }

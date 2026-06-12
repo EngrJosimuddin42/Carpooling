@@ -3,6 +3,9 @@ import 'package:carpooling/theme/app_text_styles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+import '../../widgets/app_bottom_nav.dart';
+import '../../widgets/app_text_field.dart';
+
 class RatingScreen extends StatefulWidget {
   const RatingScreen({super.key});
 
@@ -72,28 +75,13 @@ class _RatingScreenState extends State<RatingScreen> {
               child: Text('Write a Review (Optional)', style: AppTextStyles.title),
             ),
             SizedBox(height: 8.h),
-            TextField(
+            AppTextField(
               controller: _reviewCtrl,
+              hintText: 'Share your experience with other parents...',
               maxLines: 4,
-              decoration: InputDecoration(
-                hintText: 'Share your experience with other parents...',
-                hintStyle: AppTextStyles.medium.copyWith(color: Colors.grey),
-                filled: true,
-                fillColor: Colors.white,
-                contentPadding: EdgeInsets.all(14.w),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10.r),
-                  borderSide: BorderSide(color: const Color(0xFFE0E0E0)),
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10.r),
-                  borderSide: BorderSide(color: const Color(0xFFE0E0E0)),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10.r),
-                  borderSide: BorderSide(color: AppColors.primary),
-                ),
-              ),
+              borderRadius: 14,
+              fillColor: Colors.white,
+              borderColor: const Color(0xFFE0E0E0),
             ),
             SizedBox(height: 6.h),
             Align(
@@ -159,23 +147,7 @@ class _RatingScreenState extends State<RatingScreen> {
           ],
         ),
       ),
-      bottomNavigationBar: _buildBottomNav(),
-    );
-  }
-
-  Widget _buildBottomNav() {
-    return BottomNavigationBar(
-      type: BottomNavigationBarType.fixed,
-      selectedItemColor: AppColors.primary,
-      unselectedItemColor: Colors.grey,
-      currentIndex: 1,
-      items: const [
-        BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-        BottomNavigationBarItem(icon: Icon(Icons.directions_car), label: 'Carpools'),
-        BottomNavigationBarItem(icon: Icon(Icons.inbox), label: 'Inbox'),
-        BottomNavigationBarItem(icon: Icon(Icons.notifications), label: 'Notifications'),
-        BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
-      ],
+      bottomNavigationBar: const AppBottomNav(currentIndex: 1),
     );
   }
 }

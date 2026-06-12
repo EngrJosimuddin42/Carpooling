@@ -4,6 +4,7 @@ import 'package:carpooling/theme/app_text_styles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+import '../../widgets/app_bottom_nav.dart';
 import 'call_screen.dart';
 
 class TripInProgressScreen extends StatefulWidget {
@@ -122,7 +123,7 @@ class _TripInProgressScreenState extends State<TripInProgressScreen> {
           ],
         ),
       ),
-      bottomNavigationBar: _buildBottomNav(),
+      bottomNavigationBar: const AppBottomNav(currentIndex: 1),
     );
   }
 
@@ -371,77 +372,66 @@ class _TripInProgressScreenState extends State<TripInProgressScreen> {
     showDialog(
       context: context,
       barrierColor: Colors.black.withOpacity(0.6),
-      builder: (_) => Dialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.r)),
-        child: Padding(
-          padding: EdgeInsets.all(20.w),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(Icons.check_circle_outline, color: AppColors.primary, size: 48.sp),
-              SizedBox(height: 12.h),
-              Text('Complete This Trip?', style: AppTextStyles.large),
-              SizedBox(height: 8.h),
-              Text(
-                'Are you sure you want to complete this carpool trip? This action will stop tracking and save the ride history.',
-                textAlign: TextAlign.center,
-                style: AppTextStyles.medium,
-              ),
-              SizedBox(height: 20.h),
-              Row(
+      builder: (_) =>
+          Dialog(
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16.r)),
+            child: Padding(
+              padding: EdgeInsets.all(20.w),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
                 children: [
-                  Expanded(
-                    child: OutlinedButton(
-                      style: OutlinedButton.styleFrom(
-                        side: BorderSide(color: Colors.grey),
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8.r)),
-                      ),
-                      onPressed: () => Navigator.pop(context),
-                      child: Text('Cancel', style: AppTextStyles.medium),
-                    ),
+                  Icon(Icons.check_circle_outline, color: AppColors.primary,
+                      size: 48.sp),
+                  SizedBox(height: 12.h),
+                  Text('Complete This Trip?', style: AppTextStyles.large),
+                  SizedBox(height: 8.h),
+                  Text(
+                    'Are you sure you want to complete this carpool trip? This action will stop tracking and save the ride history.',
+                    textAlign: TextAlign.center,
+                    style: AppTextStyles.medium,
                   ),
-                  SizedBox(width: 12.w),
-                  Expanded(
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.primary,
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8.r)),
+                  SizedBox(height: 20.h),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: OutlinedButton(
+                          style: OutlinedButton.styleFrom(
+                            side: BorderSide(color: Colors.grey),
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8.r)),
+                          ),
+                          onPressed: () => Navigator.pop(context),
+                          child: Text('Cancel', style: AppTextStyles.medium),
+                        ),
                       ),
-                      onPressed: () {
-                        Navigator.pop(context);
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (_) => const RatingScreen()),
-                        );
-                      },
-                      child: Text('Complete Trip',
-                          style: AppTextStyles.medium.copyWith(color: Colors.white)),
-                    ),
+                      SizedBox(width: 12.w),
+                      Expanded(
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppColors.primary,
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8.r)),
+                          ),
+                          onPressed: () {
+                            Navigator.pop(context);
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (
+                                  _) => const RatingScreen()),
+                            );
+                          },
+                          child: Text('Complete Trip',
+                              style: AppTextStyles.medium.copyWith(
+                                  color: Colors.white)),
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
-            ],
+            ),
           ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildBottomNav() {
-    return BottomNavigationBar(
-      type: BottomNavigationBarType.fixed,
-      selectedItemColor: AppColors.primary,
-      unselectedItemColor: Colors.grey,
-      currentIndex: 1,
-      items: const [
-        BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-        BottomNavigationBarItem(icon: Icon(Icons.directions_car), label: 'Carpools'),
-        BottomNavigationBarItem(icon: Icon(Icons.inbox), label: 'Inbox'),
-        BottomNavigationBarItem(icon: Icon(Icons.notifications), label: 'Notifications'),
-        BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
-      ],
     );
   }
 }

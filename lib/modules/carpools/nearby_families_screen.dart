@@ -187,10 +187,10 @@ class _NearbyFamiliesScreenState extends State<NearbyFamiliesScreen> {
       margin: EdgeInsets.only(bottom: 16.25.h),
       padding: EdgeInsets.all(17.52.w),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16.r),
-        border: Border.all(color: const Color(0xFFE5E7EB)),
-        boxShadow: AppColors.cardShadow),
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16.r),
+          border: Border.all(color: const Color(0xFFE5E7EB)),
+          boxShadow: AppColors.cardShadow),
       child: Column(
         children: [
           Row(
@@ -232,8 +232,8 @@ class _NearbyFamiliesScreenState extends State<NearbyFamiliesScreen> {
               Container(
                 padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 6.h),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFFFFBEB),
-                  borderRadius: BorderRadius.circular(10.16.r)),
+                    color: const Color(0xFFFFFBEB),
+                    borderRadius: BorderRadius.circular(10.16.r)),
                 child: Row(
                   children: [
                     SvgPicture.asset(
@@ -249,7 +249,7 @@ class _NearbyFamiliesScreenState extends State<NearbyFamiliesScreen> {
 
           SizedBox(height: 16.h),
 
-         //button
+          //button
           Row(
             children: [
               Expanded(
@@ -289,8 +289,8 @@ class _NearbyFamiliesScreenState extends State<NearbyFamiliesScreen> {
         children: [
           if (assetPath != null && assetPath.isNotEmpty) ...[
             SvgPicture.asset(
-              assetPath, width: 16.sp, height: 16.sp,
-              colorFilter: const ColorFilter.mode(Color(0xFF4A5565), BlendMode.srcIn)),
+                assetPath, width: 16.sp, height: 16.sp,
+                colorFilter: const ColorFilter.mode(Color(0xFF4A5565), BlendMode.srcIn)),
             SizedBox(width: 6.w),
           ],
           Text(text, style: AppTextStyles.school),

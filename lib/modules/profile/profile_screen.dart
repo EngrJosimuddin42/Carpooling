@@ -22,7 +22,6 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-
   bool _isNotificationOn = true;
 
   @override
@@ -32,39 +31,38 @@ class _ProfileScreenState extends State<ProfileScreen> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            _buildHeader(context),
-            _buildStats(),
-            _buildPremiumBanner(context),
-            SizedBox(height: 16.h),
+            // ── One big gradient card (header + stats + premium) ──
+            _buildTopCard(context),
+
+            SizedBox(height: 20.h),
+
+            // ── Body sections ──
             _buildMyChildren(context),
-            SizedBox(height: 8.h),
+            SizedBox(height: 12.h),
             _buildSection('Account', [
               _menuItem(Icons.person_outline, 'Edit Profile',
                   onTap: () => Navigator.push(context,
                       MaterialPageRoute(builder: (_) => const EditProfileScreen()))),
-
               _menuItem(Icons.contacts_outlined, 'My Contact List',
-                  onTap: () =>  Navigator.push(context,
+                  onTap: () => Navigator.push(context,
                       MaterialPageRoute(builder: (_) => const ContactListScreen()))),
-
               _menuItem(Icons.child_care, 'Manage Children',
                   onTap: () => Navigator.push(context,
-                      MaterialPageRoute(builder: (_) => ManageChildrenScreen(
-                        initialChildren: AppData().children,
-                      )))),
-
-              _menuItem(Icons.verified_outlined, 'Verification Status', trailing: _verifiedBadge()),
+                      MaterialPageRoute(
+                          builder: (_) => ManageChildrenScreen(
+                            initialChildren: AppData().children,
+                          )))),
+              _menuItem(Icons.verified_outlined, 'Verification Status',
+                  trailing: _verifiedBadge()),
             ]),
-            SizedBox(height: 8.h),
+            SizedBox(height: 12.h),
             _buildSection('Preferences', [
-              _menuItem( Icons.notifications_outlined, 'Notifications',
+              _menuItem(
+                Icons.notifications_outlined,
+                'Notifications',
                 trailing: _toggle(
                   _isNotificationOn,
-                      (newValue) {
-                    setState(() {
-                      _isNotificationOn = newValue;
-                    });
-                  },
+                      (v) => setState(() => _isNotificationOn = v),
                 ),
               ),
               _menuItem(Icons.settings_outlined, 'App Settings',
@@ -74,128 +72,211 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   onTap: () => Navigator.push(context,
                       MaterialPageRoute(builder: (_) => const ChangePasswordScreen()))),
             ]),
-            SizedBox(height: 8.h),
+            SizedBox(height: 12.h),
             _buildSection('Community', [
               _menuItem(Icons.star_outline, 'Reviews & Ratings',
                   trailing: _ratingBadge(),
                   onTap: () => Navigator.push(context,
                       MaterialPageRoute(builder: (_) => const ReviewsRatingsScreen()))),
               _menuItem(Icons.subscriptions_outlined, 'Subscriptions',
-                  trailing: _upgradeBadge(context), onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const SubscriptionScreen()))),
+                  trailing: _upgradeBadge(),
+                  onTap: () => Navigator.push(context,
+                      MaterialPageRoute(builder: (_) => const SubscriptionScreen()))),
             ]),
-            SizedBox(height: 8.h),
+            SizedBox(height: 12.h),
             _buildSection('Support', [
               _menuItem(Icons.help_outline, 'Help & Support',
                   onTap: () => Navigator.push(context,
                       MaterialPageRoute(builder: (_) => const HelpSupportScreen()))),
             ]),
-            SizedBox(height: 16.h),
+            SizedBox(height: 20.h),
             _buildLogout(context),
-            SizedBox(height: 24.h),
+            SizedBox(height: 30.h),
           ],
         ),
       ),
-      bottomNavigationBar:const AppBottomNav(currentIndex: 4),
+      bottomNavigationBar: const AppBottomNav(currentIndex: 4),
     );
   }
 
-  Widget _buildHeader(BuildContext context) {
+  // ═══════════════════════════════════════════════════════════════════════════
+  // TOP GRADIENT CARD  (header + stats + premium banner)
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  Widget _buildTopCard(BuildContext context) {
     return Container(
       width: double.infinity,
-      padding: EdgeInsets.only(top: 50.h, bottom: 20.h, left: 20.w, right: 20.w),
+      padding: EdgeInsets.only(
+        top: 48.h,
+        left: 24.w,
+        right: 24.w,
+        bottom: 24.h,
+      ),
       decoration: BoxDecoration(
-        color: AppColors.primary,
+        gradient: const LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          stops: [0.0, 1.0],
+          colors: [
+            Color(0xFF66B2A3), // 135deg start
+            Color(0xFF2A8D79), // 135deg end
+          ],
+        ),
         borderRadius: BorderRadius.only(
           bottomLeft: Radius.circular(24.r),
           bottomRight: Radius.circular(24.r),
         ),
+        boxShadow:AppColors.shadow
       ),
-      child: Row(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Stack(
-            children: [
-              CircleAvatar(
-                radius: 32.r,
-                backgroundColor: Colors.white.withOpacity(0.3),
-                child: Icon(Icons.person, size: 32.sp, color: Colors.white),
-              ),
-              Positioned(
-                bottom: 0, right: 0,
-                child: Container(
-                  padding: EdgeInsets.all(4.w),
-                  decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle),
-                  child: Icon(Icons.edit, size: 12.sp, color: AppColors.primary),
-                ),
-              ),
-            ],
-          ),
-          SizedBox(width: 14.w),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text('John Doe', style: AppTextStyles.large.copyWith(color: Colors.white)),
-              Text('john.doe@email.com', style: AppTextStyles.medium.copyWith(color: Colors.white70)),
-              Text('Greenfield International School', style: AppTextStyles.medium.copyWith(color: Colors.white60)),
-            ],
-          ),
+          _buildProfileRow(),
+          SizedBox(height: 24.h),
+          _buildStatsRow(),
+          SizedBox(height: 16.h),
+          _buildPremiumBanner(context),
         ],
       ),
     ).animate().fadeIn(duration: 400.ms);
   }
 
-  Widget _buildStats() {
-    return Container(
-      margin: EdgeInsets.symmetric(horizontal: 20.w, vertical: 14.h),
-      padding: EdgeInsets.symmetric(vertical: 16.h),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(14.r),
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 8)],
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          _statItem('24', 'Total Rides'),
-          _vDivider(),
-          _statItem('4.8', 'Rating'),
-          _vDivider(),
-          _statItem('2', 'Children'),
-        ],
-      ),
-    );
-  }
+  // ── Profile row (avatar + name + email + verified badge) ──────────────────
 
-  Widget _statItem(String val, String label) {
-    return Column(
+  Widget _buildProfileRow() {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Text(val, style: AppTextStyles.large.copyWith(fontWeight: FontWeight.bold, color: AppColors.primary)),
-        Text(label, style: AppTextStyles.medium.copyWith(color: Colors.grey)),
+        // Avatar
+        Stack(
+          clipBehavior: Clip.none,
+          children: [
+            Container(
+              width: 72.w,
+              height: 72.w,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.all(color: Colors.white.withOpacity(0.6), width: 2.w),
+                image: const DecorationImage(
+                  // Replace with real asset/network image
+                  image: AssetImage('assets/images/avatar_placeholder.png'),
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ),
+            // Edit button
+            Positioned(
+              bottom: 0,
+              left: 0,
+              child: GestureDetector(
+                onTap: () {},
+                child: Container(
+                  width: 26.w,
+                  height: 26.w,
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.25),
+                    shape: BoxShape.circle,
+                    border: Border.all(color: Colors.white, width: 1.5.w),
+                  ),
+                  child: Icon(Icons.edit, size: 12.sp, color: Colors.white),
+                ),
+              ),
+            ),
+          ],
+        ),
+        SizedBox(width: 16.w),
+        // Name + email + badge
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'John Doe',
+                style: AppTextStyles.large.copyWith(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 20.sp,
+                ),
+              ),
+              SizedBox(height: 4.h),
+              Text(
+                'john.doe@email.com',
+                style: AppTextStyles.medium.copyWith(
+                  color: Colors.white.withOpacity(0.85),
+                ),
+              ),
+              SizedBox(height: 8.h),
+              // Verified badge
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.2),
+                  borderRadius: BorderRadius.circular(20.r),
+                  border: Border.all(color: Colors.white.withOpacity(0.4)),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.verified_outlined,
+                        size: 13.sp, color: Colors.white),
+                    SizedBox(width: 4.w),
+                    Text(
+                      'Verified Parent',
+                      style: AppTextStyles.medium.copyWith(
+                        color: Colors.white,
+                        fontSize: 11.sp,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
       ],
     );
   }
 
-  Widget _vDivider() => Container(width: 1, height: 36.h, color: Colors.grey.withOpacity(0.2));
+  // ── Stats row (3 frosted-glass cards) ─────────────────────────────────────
 
-  Widget _buildPremiumBanner(BuildContext context) {
-    return GestureDetector(
-      onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const SubscriptionScreen())),
+  Widget _buildStatsRow() {
+    return Row(
+      children: [
+        _statCard('24', 'Total Rides'),
+        SizedBox(width: 12.w),
+        _statCard('4.8', 'Rating'),
+        SizedBox(width: 12.w),
+        _statCard('2', 'Children'),
+      ],
+    );
+  }
+
+  Widget _statCard(String value, String label) {
+    return Expanded(
       child: Container(
-        margin: EdgeInsets.symmetric(horizontal: 20.w),
-        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+        padding: EdgeInsets.symmetric(vertical: 14.h),
         decoration: BoxDecoration(
-          color: const Color(0xFFFFF8E7),
-          borderRadius: BorderRadius.circular(12.r),
-          border: Border.all(color: Colors.amber.withOpacity(0.3)),
+          color: Colors.white.withOpacity(0.18),
+          borderRadius: BorderRadius.circular(14.r),
+          border: Border.all(color: Colors.white.withOpacity(0.2)),
         ),
-        child: Row(
+        child: Column(
           children: [
-            Icon(Icons.workspace_premium, color: Colors.amber, size: 20.sp),
-            SizedBox(width: 10.w),
-            Expanded(child: Text('Premium Membership', style: AppTextStyles.title)),
-            Container(
-              padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
-              decoration: BoxDecoration(color: Colors.amber, borderRadius: BorderRadius.circular(20.r)),
-              child: Text('Upgrade', style: AppTextStyles.medium.copyWith(color: Colors.white)),
+            Text(
+              value,
+              style: AppTextStyles.large.copyWith(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 22.sp,
+              ),
+            ),
+            SizedBox(height: 2.h),
+            Text(
+              label,
+              style: AppTextStyles.medium.copyWith(
+                color: Colors.white.withOpacity(0.8),
+                fontSize: 11.sp,
+              ),
             ),
           ],
         ),
@@ -203,18 +284,82 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
+  // ── Premium banner (inside the card) ──────────────────────────────────────
+
+  Widget _buildPremiumBanner(BuildContext context) {
+    return GestureDetector(
+      onTap: () => Navigator.push(context,
+          MaterialPageRoute(builder: (_) => const SubscriptionScreen())),
+      child: Container(
+        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
+        decoration: BoxDecoration(
+          color: Colors.white.withOpacity(0.18),
+          borderRadius: BorderRadius.circular(16.r),
+          border: Border.all(color: Colors.white.withOpacity(0.2)),
+        ),
+        child: Row(
+          children: [
+            // Crown icon in a circle
+            Container(
+              width: 38.w,
+              height: 38.w,
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.2),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(Icons.workspace_premium,
+                  color: Colors.white, size: 20.sp),
+            ),
+            SizedBox(width: 12.w),
+            Expanded(
+              child: Text(
+                'Premium Membership',
+                style: AppTextStyles.title.copyWith(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            // Upgrade pill
+            Container(
+              padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 6.h),
+              decoration: BoxDecoration(
+                color: const Color(0xFFFABF3B),
+                borderRadius: BorderRadius.circular(20.r),
+              ),
+              child: Text(
+                'Upgrade',
+                style: AppTextStyles.medium.copyWith(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // BODY SECTIONS
+  // ═══════════════════════════════════════════════════════════════════════════
+
   Widget _buildMyChildren(BuildContext context) {
     final children = [
-      {'name': 'Emma Johnson', 'age': 'Age 8 • Grade 3rd'},
-      {'name': 'Liam Johnson', 'age': 'Age 6 • Grade 1st'},
+      {'name': 'Emma Johnson', 'grade': 'Age 8 • Grade 3rd'},
+      {'name': 'Liam Johnson', 'grade': 'Age 6 • Grade 1st'},
     ];
+
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 20.w),
       padding: EdgeInsets.all(16.w),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(14.r),
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 6)],
+        boxShadow: [
+          BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 6)
+        ],
       ),
       child: Column(
         children: [
@@ -222,30 +367,47 @@ class _ProfileScreenState extends State<ProfileScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text('My Children', style: AppTextStyles.title),
-              Text('Manage', style: AppTextStyles.medium.copyWith(color: AppColors.primary)),
+              GestureDetector(
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => ManageChildrenScreen(
+                      initialChildren: AppData().children,
+                    ),
+                  ),
+                ),
+                child: Text('Manage',
+                    style:
+                    AppTextStyles.medium.copyWith(color: AppColors.primary)),
+              ),
             ],
           ),
           SizedBox(height: 12.h),
-          ...children.map((c) => Padding(
-            padding: EdgeInsets.only(bottom: 10.h),
-            child: Row(
-              children: [
-                CircleAvatar(
-                  radius: 18.r,
-                  backgroundColor: AppColors.primary.withOpacity(0.1),
-                  child: Icon(Icons.child_care, color: AppColors.primary, size: 18.sp),
-                ),
-                SizedBox(width: 12.w),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(c['name']!, style: AppTextStyles.title),
-                    Text(c['age']!, style: AppTextStyles.medium.copyWith(color: Colors.grey)),
-                  ],
-                ),
-              ],
+          ...children.map(
+                (c) => Padding(
+              padding: EdgeInsets.only(bottom: 10.h),
+              child: Row(
+                children: [
+                  CircleAvatar(
+                    radius: 18.r,
+                    backgroundColor: AppColors.primary.withOpacity(0.1),
+                    child: Icon(Icons.child_care,
+                        color: AppColors.primary, size: 18.sp),
+                  ),
+                  SizedBox(width: 12.w),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(c['name']!, style: AppTextStyles.title),
+                      Text(c['grade']!,
+                          style: AppTextStyles.medium
+                              .copyWith(color: Colors.grey)),
+                    ],
+                  ),
+                ],
+              ),
             ),
-          )),
+          ),
         ],
       ),
     );
@@ -259,54 +421,78 @@ class _ProfileScreenState extends State<ProfileScreen> {
         children: [
           Padding(
             padding: EdgeInsets.only(bottom: 8.h),
-            child: Text(title, style: AppTextStyles.title.copyWith(color: Colors.grey)),
+            child: Text(title,
+                style:
+                AppTextStyles.title.copyWith(color: Colors.grey.shade600)),
           ),
           Container(
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(14.r),
-              boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 6)],
+              boxShadow: [
+                BoxShadow(
+                    color: Colors.black.withOpacity(0.04), blurRadius: 6)
+              ],
             ),
-            child: Column(children: items),
+            child: Column(
+              children: [
+                for (int i = 0; i < items.length; i++) ...[
+                  items[i],
+                  if (i < items.length - 1)
+                    Divider(
+                        height: 1,
+                        indent: 50.w,
+                        color: Colors.grey.withOpacity(0.12)),
+                ],
+              ],
+            ),
           ),
         ],
       ),
     );
   }
 
-  Widget _menuItem(IconData icon, String label, {Widget? trailing, VoidCallback? onTap}) {
+  Widget _menuItem(IconData icon, String label,
+      {Widget? trailing, VoidCallback? onTap}) {
     return InkWell(
       onTap: onTap ?? () {},
+      borderRadius: BorderRadius.circular(14.r),
       child: Padding(
         padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
         child: Row(
           children: [
-            Icon(icon, color: Colors.grey, size: 20.sp),
+            Icon(icon, color: Colors.grey.shade500, size: 20.sp),
             SizedBox(width: 14.w),
             Expanded(child: Text(label, style: AppTextStyles.medium)),
-            trailing ?? Icon(Icons.arrow_forward_ios, size: 14.sp, color: Colors.grey),
+            trailing ??
+                Icon(Icons.arrow_forward_ios,
+                    size: 14.sp, color: Colors.grey.shade400),
           ],
         ),
       ),
     );
   }
 
+  // ─── Trailing helpers ─────────────────────────────────────────────────────
+
   Widget _verifiedBadge() => Container(
     padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
-    decoration: BoxDecoration(color: AppColors.primary.withOpacity(0.1), borderRadius: BorderRadius.circular(20.r)),
-    child: Text('Verified', style: AppTextStyles.medium.copyWith(color: AppColors.primary)),
+    decoration: BoxDecoration(
+      color: AppColors.primary.withOpacity(0.1),
+      borderRadius: BorderRadius.circular(20.r),
+    ),
+    child: Text('Verified',
+        style: AppTextStyles.medium.copyWith(color: AppColors.primary)),
   );
 
   Widget _toggle(bool value, ValueChanged<bool> onChanged) {
     return GestureDetector(
-      onTap: () {
-        onChanged(!value);
-      },
+      onTap: () => onChanged(!value),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
         width: 44.w,
-        height: 22.h,
-        padding: EdgeInsets.symmetric(horizontal: 2.w),
+        height: 24.h,
+        padding: EdgeInsets.symmetric(horizontal: 3.w),
         decoration: BoxDecoration(
           border: Border.all(
             color: value ? AppColors.primary : const Color(0xFF8A8A8A),
@@ -318,8 +504,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
         alignment: value ? Alignment.centerRight : Alignment.centerLeft,
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 200),
-          width: 16.w,
-          height: 16.w,
+          width: 17.w,
+          height: 17.w,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
             color: value ? Colors.white : const Color(0xFFB0B0B0),
@@ -335,26 +521,45 @@ class _ProfileScreenState extends State<ProfileScreen> {
       SizedBox(width: 4.w),
       Text('4.8', style: AppTextStyles.medium),
       SizedBox(width: 6.w),
-      Icon(Icons.arrow_forward_ios, size: 14.sp, color: Colors.grey),
+      Icon(Icons.arrow_forward_ios,
+          size: 14.sp, color: Colors.grey.shade400),
     ],
   );
 
-  Widget _upgradeBadge(BuildContext context) => Container(
+  Widget _upgradeBadge() => Container(
     padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
-    decoration: BoxDecoration(color: Colors.amber, borderRadius: BorderRadius.circular(20.r)),
-    child: Text('Upgrade', style: AppTextStyles.medium.copyWith(color: Colors.white)),
+    decoration: BoxDecoration(
+      color: Colors.amber,
+      borderRadius: BorderRadius.circular(20.r),
+    ),
+    child: Text('Upgrade',
+        style: AppTextStyles.medium.copyWith(color: Colors.white)),
   );
+
+  // ─── Logout ───────────────────────────────────────────────────────────────
 
   Widget _buildLogout(BuildContext context) {
     return GestureDetector(
-      onTap: () {},
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(Icons.logout, color: Colors.red, size: 18.sp),
-          SizedBox(width: 8.w),
-          Text('Logout', style: AppTextStyles.medium.copyWith(color: Colors.red)),
-        ],
+      onTap: () {
+        // TODO: logout logic
+      },
+      child: Container(
+        margin: EdgeInsets.symmetric(horizontal: 20.w),
+        padding: EdgeInsets.symmetric(vertical: 14.h),
+        decoration: BoxDecoration(
+          color: Colors.red.withOpacity(0.06),
+          borderRadius: BorderRadius.circular(14.r),
+          border: Border.all(color: Colors.red.withOpacity(0.15)),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.logout, color: Colors.red, size: 18.sp),
+            SizedBox(width: 8.w),
+            Text('Logout',
+                style: AppTextStyles.medium.copyWith(color: Colors.red)),
+          ],
+        ),
       ),
     );
   }
