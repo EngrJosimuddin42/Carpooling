@@ -343,11 +343,8 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                   color: Color(0xFFF3F4F6), shape: BoxShape.circle),
               alignment: Alignment.center,
               padding: EdgeInsets.all(10.w),
-              child: SvgPicture.asset(
-                  'assets/icons/image_outlined.svg',
-                  width: 20.sp, height: 20.sp,
-                  colorFilter: const ColorFilter.mode(
-                      Color(0xFF4A5565), BlendMode.srcIn)),
+              child: SvgPicture.asset('assets/icons/image_outlined.svg', width: 20.sp, height: 20.sp,
+                  colorFilter: const ColorFilter.mode(Color(0xFF4A5565), BlendMode.srcIn)),
             ),
           ),
           SizedBox(width: 12.w),

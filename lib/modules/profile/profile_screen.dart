@@ -293,8 +293,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
   // BODY SECTIONS
   Widget _buildMyChildren(BuildContext context) {
     final children = [
-      {'name': 'Emma Johnson', 'grade': 'Age 8 • Grade 3rd'},
-      {'name': 'Liam Johnson', 'grade': 'Age 6 • Grade 1st'},
+      {'name': 'Emma Johnson', 'grade': 'Grade 3rd'},
+      {'name': 'Liam Johnson', 'grade': 'Grade 1st'},
     ];
 
     return Container(

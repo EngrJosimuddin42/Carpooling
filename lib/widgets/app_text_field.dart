@@ -1,5 +1,6 @@
 import 'package:carpooling/theme/app_text_styles.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../theme/app_colors.dart';
 class AppTextField extends StatelessWidget {
@@ -18,6 +19,8 @@ class AppTextField extends StatelessWidget {
   final bool readOnly;
   final VoidCallback? onTap;
   final BoxConstraints? prefixIconConstraints;
+  final List<TextInputFormatter>? inputFormatters;
+
 
   const AppTextField({
     super.key,
@@ -36,6 +39,7 @@ class AppTextField extends StatelessWidget {
     this.readOnly = false,
     this.onTap,
     this.prefixIconConstraints,
+    this.inputFormatters,
   });
 
   @override
@@ -50,6 +54,7 @@ class AppTextField extends StatelessWidget {
       maxLines: maxLines,
       readOnly: readOnly,
       onTap: onTap,
+      inputFormatters: inputFormatters,
       style: AppTextStyles.buttonText,
       decoration: InputDecoration(
         hintText: hintText,

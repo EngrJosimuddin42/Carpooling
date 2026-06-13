@@ -155,18 +155,43 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
             _buildLabel('Bio / About'),
             SizedBox(height: 8.h),
-            AppTextField(
-              hintText: 'Tell others about yourself...',
-              controller: _bioCtrl,
-              maxLines: 3,
-              borderRadius: 14.23.r,
-              borderColor:const Color(0xFFD1D5DC),
-              fillColor:const Color(0xFFF9FAFB),
-              prefixIcon: Padding(
-                padding:const  EdgeInsets.symmetric(vertical: 15),
-                child: SvgPicture.asset('assets/icons/description_outlined.svg', width: 20.sp, height: 20.sp,
-                  colorFilter: const ColorFilter.mode(Color(0xFF99A1AF), BlendMode.srcIn),
-                ),
+            Container(
+              decoration: BoxDecoration(
+                color: const Color(0xFFF9FAFB),
+                borderRadius: BorderRadius.circular(14.23.r),
+                border: Border.all(color: const Color(0xFFD1D5DC))),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: EdgeInsets.only(left: 14.w, top: 14.h, right: 4.w),
+                    child: SvgPicture.asset(
+                      'assets/icons/description_outlined.svg',
+                      width: 20.sp, height: 20.sp,
+                      colorFilter: const ColorFilter.mode(
+                          Color(0xFF99A1AF), BlendMode.srcIn),
+                    ),
+                  ),
+                  Expanded(
+                    child: TextFormField(
+                      controller: _bioCtrl,
+                      maxLines: 3,
+                      style: AppTextStyles.buttonText,
+                      decoration: InputDecoration(
+                        hintText: 'Tell others about yourself...',
+                        hintStyle: AppTextStyles.hintText,
+                        border: InputBorder.none,
+                        fillColor: const Color(0xFFF9FAFB),
+                        enabledBorder: InputBorder.none,
+                        focusedBorder: InputBorder.none,
+                        errorBorder: InputBorder.none,
+                        disabledBorder: InputBorder.none,
+                        contentPadding: EdgeInsets.symmetric(
+                            horizontal: 8.w, vertical: 14.h),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
             SizedBox(height: 16.h),

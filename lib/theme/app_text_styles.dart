@@ -47,6 +47,14 @@ class AppTextStyles {
     letterSpacing: 0
   );
 
+  static TextStyle get cardNumber => GoogleFonts.inter(    //
+      fontSize: 24.sp,
+      fontWeight: FontWeight.w400,
+      color: AppColors.white,
+      height: 1.2,
+      letterSpacing: 0
+  );
+
   static TextStyle get digit => GoogleFonts.inter(    //
       fontSize: 24.sp,
       fontWeight: FontWeight.w700,
@@ -68,6 +76,14 @@ class AppTextStyles {
       fontWeight: FontWeight.w600,
       color: const Color(0xFF101828),
       height: 1.5,
+      letterSpacing: 0
+  );
+
+  static TextStyle get card => GoogleFonts.inter(    //
+      fontSize: 20.sp,
+      fontWeight: FontWeight.w700,
+      color: const Color(0xFFFFFFFF),
+      height: 1.2,
       letterSpacing: 0
   );
 

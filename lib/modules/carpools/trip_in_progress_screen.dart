@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../widgets/app_bottom_nav.dart';
+import '../profile/manage_children/custom_delete_dialog.dart';
 import 'call_screen.dart';
 
 class TripInProgressScreen extends StatefulWidget {
@@ -28,80 +29,29 @@ class _TripInProgressScreenState extends State<TripInProgressScreen> {
   int get _droppedOffCount => _children.where((c) => c['droppedOff']).length;
 
   void _showDeleteConfirmation(BuildContext context, int index) {
-    showDialog(
+    CustomDeleteDialog.show(
       context: context,
-      builder: (_) => Dialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.r)),
-        child: Padding(
-          padding: EdgeInsets.all(20.w),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text('Confirmation', style: AppTextStyles.large),
-              SizedBox(height: 10.h),
-              Text(
-                'Are you sure you want to remove this child from your Checklist? This action cannot be undone.',
-                textAlign: TextAlign.center,
-                style: AppTextStyles.medium,
-              ),
-              SizedBox(height: 20.h),
-              Row(
-                children: [
-                  Expanded(
-                    child: OutlinedButton(
-                      style: OutlinedButton.styleFrom(
-                        side: BorderSide(color: Colors.grey),
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8.r)),
-                      ),
-                      onPressed: () => Navigator.pop(context),
-                      child: Text('Cancel', style: AppTextStyles.medium),
-                    ),
-                  ),
-                  SizedBox(width: 12.w),
-                  Expanded(
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.red,
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8.r)),
-                      ),
-                      onPressed: () {
-                        setState(() => _children.removeAt(index));
-                        Navigator.pop(context);
-                      },
-                      child: Text('Delete',
-                          style: AppTextStyles.medium.copyWith(color: Colors.white)),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ),
+      title: 'Confirmation',
+      message: 'Are you sure you want to remove this child from your Checklist? This action cannot be undone.',
+      onConfirm: () {
+        setState(() {
+          _children.removeAt(index);
+        });
+      },
     );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF1A1A2E),
-      body: SafeArea(
-        child: Column(
+      backgroundColor: const Color(0xFFF9FAFB),
+      extendBodyBehindAppBar: true,
+      body: Column(
           children: [
             _buildTripHeader(),
             Expanded(
-              child: Container(
-                decoration: BoxDecoration(
-                  color: AppColors.bg,
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(20.r),
-                    topRight: Radius.circular(20.r),
-                  ),
-                ),
                 child: SingleChildScrollView(
-                  padding: EdgeInsets.all(16.w),
+                  padding: EdgeInsets.all(24.w),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -118,42 +68,74 @@ class _TripInProgressScreenState extends State<TripInProgressScreen> {
                     ],
                   ),
                 ),
-              ),
             ),
           ],
         ),
-      ),
       bottomNavigationBar: const AppBottomNav(currentIndex: 1),
     );
   }
 
   Widget _buildTripHeader() {
     return Container(
-      padding: EdgeInsets.all(16.w),
-      color: const Color(0xFF1A1A2E),
+      padding: EdgeInsets.only(top: 60.h, bottom: 24.h),
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          colors: [Color(0xFF66B2A3), Color(0xFF2A8D79)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+      ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              Icon(Icons.directions_car, color: AppColors.primary, size: 16.sp),
-              SizedBox(width: 6.w),
-              Text('TRIP IN PROGRESS',
-                  style: AppTextStyles.medium.copyWith(color: AppColors.primary)),
-            ],
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 24.w),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                // ব্যাক বাটন
+                GestureDetector(
+                  onTap: () => Navigator.pop(context),
+                  child: Container(
+                    padding: EdgeInsets.all(10.w),
+                    decoration: const BoxDecoration(
+                        color: Color(0x33FFFFFF), shape: BoxShape.circle),
+                    child: Icon(Icons.arrow_back, size: 20.sp, color: Colors.white))),
+                SizedBox(width: 16.w),
+
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Container(width: 8.w, height: 8.w, decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle)),
+                          SizedBox(width: 8.w),
+                          Text('TRIP IN PROGRESS', style: AppTextStyles.action.copyWith(color: Colors.white, fontWeight: FontWeight.bold)),
+                        ],
+                      ),
+                      SizedBox(height: 4.h),
+                      Text(
+                        widget.carpool['title'] ?? 'Morning School Run',
+                        style: AppTextStyles.heading.copyWith(color: Colors.white, fontSize: 24.sp),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
-          SizedBox(height: 4.h),
-          Text(widget.carpool['title'],
-              style: AppTextStyles.large.copyWith(color: Colors.white)),
-          SizedBox(height: 12.h),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              _statItem('${_isPickupPhase ? _pickedUpCount : _droppedOffCount}/${_children.length}',
-                  _isPickupPhase ? 'Picked Up' : 'Dropped Off'),
-              _statItem('12 min', 'ETA'),
-              _statItem('5.2 km', 'Remaining'),
-            ],
+          SizedBox(height: 24.h),
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 24.w),
+            child: Row(
+              children: [
+                Expanded(child: _statItem('${_isPickupPhase ? _pickedUpCount : _droppedOffCount}/${_children.length}', _isPickupPhase ? 'Picked Up' : 'Dropped Off')),
+                SizedBox(width: 12.w),
+                Expanded(child: _statItem('12 min', 'ETA')),
+                SizedBox(width: 12.w),
+                Expanded(child: _statItem('5.2 km', 'Remaining')),
+              ],
+            ),
           ),
         ],
       ),
@@ -161,14 +143,18 @@ class _TripInProgressScreenState extends State<TripInProgressScreen> {
   }
 
   Widget _statItem(String value, String label) {
-    return Column(
-      children: [
-        Text(value,
-            style: AppTextStyles.large.copyWith(
-                color: Colors.white, fontWeight: FontWeight.bold)),
-        Text(label,
-            style: AppTextStyles.medium.copyWith(color: Colors.white60)),
-      ],
+    return Container(
+      padding: EdgeInsets.symmetric(vertical: 12.h),
+      decoration: BoxDecoration(
+        color: const Color(0x33FFFFFF),
+        borderRadius: BorderRadius.circular(14.23.r)),
+      child: Column(
+        children: [
+          Text(value, style: AppTextStyles.heading.copyWith(color: Colors.white)),
+          SizedBox(height: 2.h),
+          Text(label, style: AppTextStyles.time.copyWith(color: Colors.white)),
+        ],
+      ),
     );
   }
 

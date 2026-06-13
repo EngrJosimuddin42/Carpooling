@@ -19,6 +19,13 @@ class AppData {
     'avatar': 'assets/images/avatar1.jpg',
   });
 
+  // Card data
+  final ValueNotifier<Map<String, String>> cardData = ValueNotifier({
+    'holder': '',
+    'number': '',
+    'expiry': '',
+    'cvv': '',
+  });
 
   // ── Carpools list ──────────────────────────────────────────────────────────
   final ValueNotifier<List<Map<String, dynamic>>> carpools = ValueNotifier([
@@ -54,6 +61,7 @@ class AppData {
     },
 
   ]);
+
 
   void addCarpool(Map<String, dynamic> carpool) {
     carpools.value = [...carpools.value, carpool];

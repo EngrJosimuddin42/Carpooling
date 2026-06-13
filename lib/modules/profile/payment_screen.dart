@@ -1,10 +1,52 @@
+import 'package:carpooling/data/app_data.dart';
+import 'package:carpooling/theme/app_colors.dart';
 import 'package:carpooling/theme/app_text_styles.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import '../../widgets/app_bottom_nav.dart';
 import '../../widgets/app_buttons.dart';
 import '../../widgets/app_text_field.dart';
+
+// ── Formatters ──────────────────────────────────────────────────────────────
+
+class CardNumberFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(
+      TextEditingValue oldValue, TextEditingValue newValue) {
+    final digits = newValue.text.replaceAll(RegExp(r'\D'), '');
+    final buffer = StringBuffer();
+    for (int i = 0; i < digits.length; i++) {
+      if (i > 0 && i % 4 == 0) buffer.write('  ');
+      buffer.write(digits[i]);
+    }
+    final formatted = buffer.toString();
+    return newValue.copyWith(
+      text: formatted,
+      selection: TextSelection.collapsed(offset: formatted.length),
+    );
+  }
+}
+
+class ExpiryFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(
+      TextEditingValue oldValue, TextEditingValue newValue) {
+    final digits = newValue.text.replaceAll(RegExp(r'\D'), '');
+    String formatted = digits;
+    if (digits.length >= 3) {
+      formatted =
+      '${digits.substring(0, 2)}/${digits.substring(2, digits.length.clamp(0, 4))}';
+    }
+    return newValue.copyWith(
+      text: formatted,
+      selection: TextSelection.collapsed(offset: formatted.length),
+    );
+  }
+}
+
+// ── Screen ───────────────────────────────────────────────────────────────────
 
 class PaymentScreen extends StatefulWidget {
   const PaymentScreen({super.key});
@@ -22,6 +64,13 @@ class _PaymentScreenState extends State<PaymentScreen> {
   @override
   void initState() {
     super.initState();
+    // load saved data
+    final card = AppData().cardData.value;
+    _holderCtrl.text = card['holder'] ?? '';
+    _cardCtrl.text   = card['number'] ?? '';
+    _mmyyCtrl.text   = card['expiry'] ?? '';
+    _cvvCtrl.text    = card['cvv']    ?? '';
+
     _cardCtrl.addListener(() => setState(() {}));
     _holderCtrl.addListener(() => setState(() {}));
     _mmyyCtrl.addListener(() => setState(() {}));
@@ -34,6 +83,39 @@ class _PaymentScreenState extends State<PaymentScreen> {
     _mmyyCtrl.dispose();
     _cvvCtrl.dispose();
     super.dispose();
+  }
+
+  void _save() {
+    if (_holderCtrl.text.trim().isEmpty ||
+        _cardCtrl.text.trim().isEmpty ||
+        _mmyyCtrl.text.trim().isEmpty ||
+        _cvvCtrl.text.trim().isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text('Please fill all fields'),
+            backgroundColor: Colors.red,
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10.r)),
+          ));
+      return;
+    }
+
+    AppData().cardData.value = {
+      'holder': _holderCtrl.text.trim(),
+      'number': _cardCtrl.text.trim(),
+      'expiry': _mmyyCtrl.text.trim(),
+      'cvv':    _cvvCtrl.text.trim(),
+    };
+
+    ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text('Card saved successfully'),
+          backgroundColor: AppColors.primary,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10.r)),
+        ));
   }
 
   @override
@@ -65,41 +147,61 @@ class _PaymentScreenState extends State<PaymentScreen> {
             SizedBox(height: 20.h),
             _buildCard(),
             SizedBox(height: 24.h),
+
+            // Card Holder
             AppTextField(
-              hintText: 'Card Holder',
-              controller: _holderCtrl,
-              keyboardType: TextInputType.name,
-              fillColor: Colors.white,
-              borderRadius: 10.r),
+                hintText: 'Card Holder',
+                controller: _holderCtrl,
+                keyboardType: TextInputType.name,
+                fillColor: const Color(0xFFF9FAFB),
+                borderRadius: 10.r),
             SizedBox(height: 16.h),
+
+            // Card Number
             AppTextField(
-              hintText: 'Card Number',
-              controller: _cardCtrl,
-              keyboardType: TextInputType.number,
-              fillColor: Colors.white,
-              borderRadius: 10.r),
+                hintText: 'Card Number',
+                controller: _cardCtrl,
+                keyboardType: TextInputType.number,
+                fillColor: const Color(0xFFF9FAFB),
+                borderRadius: 10.r,
+                inputFormatters: [
+                  LengthLimitingTextInputFormatter(22),
+                  CardNumberFormatter(),
+                ]),
             SizedBox(height: 16.h),
+
+            // MM/YY + CVV
             Row(
               children: [
                 Expanded(
-                  child: AppTextField(
-                    hintText: 'MM/YY',
-                    controller: _mmyyCtrl,
-                    keyboardType: TextInputType.number,
-                    fillColor: Colors.white,
-                    borderRadius: 10.r)),
+                    child: AppTextField(
+                        hintText: 'MM/YY',
+                        controller: _mmyyCtrl,
+                        keyboardType: TextInputType.number,
+                        fillColor: Colors.white,
+                        borderRadius: 10.r,
+                        inputFormatters: [
+                          LengthLimitingTextInputFormatter(5),
+                          ExpiryFormatter(),
+                        ])),
                 SizedBox(width: 16.w),
                 Expanded(
-                  child: AppTextField(
-                    hintText: 'CVV',
-                    controller: _cvvCtrl,
-                    keyboardType: TextInputType.number,
-                    fillColor: Colors.white,
-                    borderRadius: 10.r)),
+                    child: AppTextField(
+                        hintText: 'CVV',
+                        controller: _cvvCtrl,
+                        keyboardType: TextInputType.number,
+                        fillColor: Colors.white,
+                        borderRadius: 10.r,
+                        obscureText: true,
+                        inputFormatters: [
+                          LengthLimitingTextInputFormatter(3),
+                          FilteringTextInputFormatter.digitsOnly,
+                        ])),
               ],
             ),
             SizedBox(height: 24.h),
-            PrimaryButton(text: 'Update', onPressed: () {}),
+
+            PrimaryButton(text: 'Update', onPressed: _save),
             SizedBox(height: 30.h),
           ],
         ),
@@ -119,22 +221,11 @@ class _PaymentScreenState extends State<PaymentScreen> {
 
     return Container(
       width: double.infinity,
-      height: 210.h,
-      padding: EdgeInsets.all(22.w),
+      height: 270.h,
+      padding: EdgeInsets.all(20.w),
       decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [Color(0xFF4BBFAD), Color(0xFF2A8D79)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight),
-        borderRadius: BorderRadius.circular(20.r),
-        boxShadow: [
-          BoxShadow(
-            color: const Color(0xFF4BBFAD).withOpacity(0.45),
-            blurRadius: 24,
-            offset: const Offset(0, 10),
-          ),
-        ],
-      ),
+          color: const Color(0xFF3B8677),
+          borderRadius: BorderRadius.circular(12.r)),
       child: Stack(
         children: [
           // ── decorative circles ──
@@ -144,7 +235,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
               width: 180.w, height: 180.w,
               decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: Colors.white.withOpacity(0.08)),
+                  color: Colors.white.withValues(alpha: 0.08)),
             ),
           ),
           Positioned(
@@ -153,93 +244,54 @@ class _PaymentScreenState extends State<PaymentScreen> {
               width: 140.w, height: 140.w,
               decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: Colors.white.withOpacity(0.06)),
+                  color: Colors.white.withValues(alpha: 0.06)),
             ),
           ),
+
 
           // ── card content ──
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Row 1: BANK NAME + CARD NAME
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text('BANK NAME',
-                      style: AppTextStyles.medium.copyWith(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w800,
-                          letterSpacing: 1.2)),
+                  Text('BANK NAME', style: AppTextStyles.card),
                   Text('CARD NAME',
-                      style: AppTextStyles.medium.copyWith(
-                          color: Colors.white70)),
+                      style: AppTextStyles.hintText.copyWith(color: Colors.white)),
                 ],
               ),
-
-              SizedBox(height: 14.h),
-
-              // Row 2: chip + contactless
+              SizedBox(height: 30.h),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  // Chip SVG
-                  SvgPicture.asset(
-                    'assets/icons/chip.svg', width: 42.w, height: 32.w,
-                    colorFilter: const ColorFilter.mode(
-                        Color(0xFFE5A100), BlendMode.srcIn),
-                  ),
-                  // Contactless SVG
-                  SvgPicture.asset(
-                    'assets/icons/wifi.svg',
-                    width: 25.w,
-                    height: 25.w,
-                    colorFilter: const ColorFilter.mode(
-                        Colors.white70, BlendMode.srcIn),
-                  ),
+                  SvgPicture.asset('assets/icons/chip.svg',
+                      width: 42.w, height: 32.w),
+                  SvgPicture.asset('assets/icons/wifi.svg',
+                      width: 25.w, height: 25.w),
                 ],
               ),
-
-              SizedBox(height: 14.h),
-
-              // Card number
-              Text(cardNum,
-                  style: AppTextStyles.large.copyWith(
-                      color: Colors.white,
-                      letterSpacing: 3,
-                      fontWeight: FontWeight.w600)),
-
-              SizedBox(height: 6.h),
-
-              // Row 3: 01/23  03/27
+              SizedBox(height: 13.h),
+              Text(cardNum, style: AppTextStyles.cardNumber),
+              SizedBox(height: 13.h),
               Row(
                 children: [
                   Text('01/23',
-                      style: AppTextStyles.school.copyWith(color: Colors.white70)),
-                  SizedBox(width: 24.w),
+                      style: AppTextStyles.address.copyWith(color: Colors.white)),
+                  SizedBox(width: 56.w),
                   Text(expiry,
-                      style: AppTextStyles.school.copyWith(color: Colors.white70)),
+                      style: AppTextStyles.address.copyWith(color: Colors.white)),
                 ],
               ),
-
               const Spacer(),
-
-              // Row 4: CARDHOLDER NAME + mastercard
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Text(holder,
-                      style: AppTextStyles.medium.copyWith(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w700,
-                          letterSpacing: 0.8)),
-
-                  // Mastercard SVG
-                  SvgPicture.asset(
-                    'assets/icons/mastercard.svg',
-                    width: 48.w,
-                    height: 30.w,
-                  ),
+                      style: AppTextStyles.social.copyWith(color: Colors.white)),
+                  SvgPicture.asset('assets/icons/mastercard.svg',
+                      width: 48.w, height: 30.w),
                 ],
               ),
             ],

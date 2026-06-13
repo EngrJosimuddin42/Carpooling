@@ -13,7 +13,10 @@ import 'contact_list_screen.dart';
 import 'nearby_families_screen.dart';
 
 class CreateCarpoolScreen extends StatefulWidget {
-  const CreateCarpoolScreen({super.key});
+  final Map<String, dynamic>? carpoolToEdit;
+  final int? index;
+
+  const CreateCarpoolScreen({super.key, this.carpoolToEdit, this.index});
 
   @override
   State<CreateCarpoolScreen> createState() => _CreateCarpoolScreenState();
@@ -24,6 +27,7 @@ class _CreateCarpoolScreenState extends State<CreateCarpoolScreen> {
   final _pickupCtrl = TextEditingController();
   final _destCtrl = TextEditingController();
   final _notesCtrl = TextEditingController();
+  bool get _isEditing => widget.carpoolToEdit != null;
 
   String _selectedSchedule = '';
   final List<String> _schedules = ['Once', 'Daily','Custom'];
@@ -44,47 +48,55 @@ class _CreateCarpoolScreenState extends State<CreateCarpoolScreen> {
   String _selectedStartTime = '';
   String _selectedArrivalTime = '';
 
+
   void _createCarpool() {
     if (_titleCtrl.text.trim().isEmpty) {
-      AppSnackBar.show(
-        context: context,
-        message: 'Please enter a carpool title',
-        backgroundColor: Colors.redAccent,
-      );
+      AppSnackBar.show(context: context, message: 'Please enter a carpool title', backgroundColor: Colors.redAccent);
       return;
     }
     if (_pickupCtrl.text.trim().isEmpty) {
-      AppSnackBar.show(
-        context: context,
-        message: 'Please enter pickup location',
-        backgroundColor: Colors.redAccent,
-      );
+      AppSnackBar.show(context: context, message: 'Please enter pickup location', backgroundColor: Colors.redAccent);
       return;
     }
     if (_destCtrl.text.trim().isEmpty) {
-      AppSnackBar.show(
-        context: context,
-        message: 'Please enter destination',
-        backgroundColor: Colors.redAccent,
-      );
+      AppSnackBar.show(context: context, message: 'Please enter destination', backgroundColor: Colors.redAccent);
       return;
     }
 
-
-    AppData().addCarpool({
+    final newCarpool = {
       'title': _titleCtrl.text.trim(),
-      'status': 'Pending',
-      'date': _selectedDate.isEmpty ? 'Date TBD' : '$_selectedDate • $_selectedStartTime',
+      'status': widget.carpoolToEdit?['status'] ?? 'Pending',
+      'date': _selectedDate.isEmpty
+          ? (widget.carpoolToEdit?['date'] ?? 'Date TBD')
+          : '$_selectedDate • $_selectedStartTime',
       'from': _pickupCtrl.text.trim(),
       'to': _destCtrl.text.trim(),
-      'parents': 1,
-      'children': _selectedChildren.length,
-      'driver': 'You',
-      'driverColor': Colors.green,
+      'parents': widget.carpoolToEdit?['parents'] ?? 1,
+      'children': _selectedChildren.isEmpty ? (widget.carpoolToEdit?['children'] ?? 0) : _selectedChildren.length,
+      'driver': widget.carpoolToEdit?['driver'] ?? 'You',
+      'driverColor': widget.carpoolToEdit?['driverColor'] ?? Colors.green,
       'notes': _notesCtrl.text.trim(),
-    });
+    };
+
+    if (_isEditing) {
+      AppData().carpools.value[widget.index!] = newCarpool;
+      AppData().carpools.notifyListeners();
+    } else {
+      AppData().addCarpool(newCarpool);
+    }
 
     Navigator.pop(context);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.carpoolToEdit != null) {
+      _titleCtrl.text = widget.carpoolToEdit!['title'] ?? '';
+      _pickupCtrl.text = widget.carpoolToEdit!['from'] ?? '';
+      _destCtrl.text = widget.carpoolToEdit!['to'] ?? '';
+      _notesCtrl.text = widget.carpoolToEdit!['notes'] ?? '';
+    }
   }
 
   @override
@@ -159,7 +171,7 @@ class _CreateCarpoolScreenState extends State<CreateCarpoolScreen> {
                           color: Color(0xFFF3F4F6),
                           shape: BoxShape.circle),
                       child: Icon(Icons.arrow_back, size: 22.sp, color: const Color(0xFF364153))))),
-          title: Text('Create Carpool', style: AppTextStyles.heading),
+          title: Text(_isEditing ? 'Edit Carpool' : 'Create Carpool', style: AppTextStyles.heading),
           bottom: PreferredSize(
               preferredSize: const Size.fromHeight(2.0),
               child: Divider(color: Colors.grey.shade300, height: 2, thickness: 2))),
@@ -372,7 +384,7 @@ class _CreateCarpoolScreenState extends State<CreateCarpoolScreen> {
               ],
 
               PrimaryButton(
-                text: 'Create Carpool',
+                text: _isEditing ? 'Update Carpool' : 'Create Carpool',
                 fontWeight: FontWeight.w600,
                 onPressed: _createCarpool,
               ),
