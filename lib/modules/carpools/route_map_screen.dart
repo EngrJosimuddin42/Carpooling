@@ -1,10 +1,11 @@
+import 'package:carpooling/modules/carpools/widgets/zoomable_map_painter.dart';
 import 'package:carpooling/theme/app_text_styles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import '../../widgets/app_bottom_nav.dart';
+import 'package:flutter_svg/svg.dart';
+import '../../widgets/app_buttons.dart';
 import 'live_tracking_screen.dart';
-import 'trip_in_progress_screen.dart';
 
 class RouteMapScreen extends StatefulWidget {
   final Map<String, dynamic>? carpool;
@@ -28,8 +29,7 @@ class _RouteMapScreenState extends State<RouteMapScreen> {
         statusBarBrightness: Brightness.light, // For iOS
       ),
       child: Scaffold(
-        backgroundColor: Colors.white,
-        bottomNavigationBar: const AppBottomNav(currentIndex: 1),
+        backgroundColor: const Color(0xFFF9FAFB),
         body: Stack(
           children: [
             // ── Interactive Map Background ──
@@ -39,18 +39,53 @@ class _RouteMapScreenState extends State<RouteMapScreen> {
                   _mapOffset += details.delta;
                 });
               },
-              child: Container(
+              child:Stack(
+                  children: [
+                    Container(
                 color: const Color(0xFFF1F5F2), // Light map background color
                 child: ClipRect(
                   child: CustomPaint(
-                    painter: _MapGridPainter(
+                    painter: ZoomableMapPainter(
                       zoomFactor: _zoomFactor,
                       offset: _mapOffset,
                     ),
-                    child: Container(),
+                    child: const SizedBox.expand(),
                   ),
                 ),
               ),
+                    // ── Pickup Pin ──
+                    Positioned(
+                      left: MediaQuery.of(context).size.width * 0.15,
+                      top: MediaQuery.of(context).size.height * 0.2,
+                      child: Column(
+                        children: [
+                          Icon(Icons.location_on, color: Colors.green, size: 40.sp),
+                          Container(
+                            padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
+                            decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(20.r)),
+                            child: Text("Pickup", style: AppTextStyles.cs.copyWith(color: const Color(0xFF101828))),
+                          ),
+                        ],
+                      ),
+                    ),
+
+                 // ── Destination Pin ──
+                    Positioned(
+                      right: MediaQuery.of(context).size.width * 0.15,
+                      bottom: MediaQuery.of(context).size.height * 0.3,
+                      child: Column(
+                        children: [
+                          Icon(Icons.location_on, color: Colors.red, size: 40.sp),
+                          Container(
+                            padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
+                            decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(20.r)),
+                            child: Text("Destination",style: AppTextStyles.cs.copyWith(color: const Color(0xFF101828))),
+                          ),
+                        ],
+                      ),
+                    ),
+              ]
+            )
             ),
 
             // ── Top Title Bar ──
@@ -62,28 +97,10 @@ class _RouteMapScreenState extends State<RouteMapScreen> {
                 children: [
                   _circleButton(
                     Icons.arrow_back,
-                    onTap: () {
-                      if (Navigator.canPop(context)) {
-                        Navigator.pop(context);
-                      } else {
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(builder: (_) => TripInProgressScreen(
-                            carpool: widget.carpool ?? {},
-                          )),
-                        );
-                      }
-                    },
-                  ),
+                    onTap: () => Navigator.pop(context)),
                   SizedBox(width: 16.w),
-                  Text(
-                    'Route Map',
-                    style: AppTextStyles.heading.copyWith(
-                      color: const Color(0xFF0F172A),
-                      fontWeight: FontWeight.bold,
-                      fontSize: 22.sp,
-                    ),
-                  ),
+                  Text('Route Map',
+                    style: AppTextStyles.tagline)
                 ],
               ),
             ),
@@ -99,7 +116,7 @@ class _RouteMapScreenState extends State<RouteMapScreen> {
                   borderRadius: BorderRadius.circular(16.r),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.08),
+                      color: Colors.black.withValues(alpha: 0.08),
                       blurRadius: 16,
                       offset: const Offset(0, 4),
                     )
@@ -113,8 +130,7 @@ class _RouteMapScreenState extends State<RouteMapScreen> {
                       width: 1.w,
                       height: 32.h,
                       color: const Color(0xFFE2E8F0),
-                      margin: EdgeInsets.symmetric(horizontal: 16.w),
-                    ),
+                      margin: EdgeInsets.symmetric(horizontal: 16.w)),
                     _statChip('15 min', 'Travel Time'),
                   ],
                 ),
@@ -162,15 +178,15 @@ class _RouteMapScreenState extends State<RouteMapScreen> {
             Positioned(
               left: 0,
               right: 0,
-              bottom: 0,
+              bottom: 10,
               child: Container(
                 padding: EdgeInsets.fromLTRB(24.w, 24.h, 24.w, 32.h),
                 decoration: BoxDecoration(
                   color: Colors.white,
-                  borderRadius: BorderRadius.vertical(top: Radius.circular(30.r)),
+                  borderRadius: BorderRadius.vertical(top: Radius.circular(24.r)),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.04),
+                      color: Colors.black.withValues(alpha: 0.04),
                       blurRadius: 24,
                       offset: const Offset(0, -8),
                     ),
@@ -183,10 +199,12 @@ class _RouteMapScreenState extends State<RouteMapScreen> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         CircleAvatar(
-                          radius: 28.r,
+                          radius: 32.r,
                           backgroundColor: Colors.grey.shade100,
-                          backgroundImage: const AssetImage('assets/images/avatar.jpg'),
-                        ),
+                  backgroundImage: (widget.carpool?['driver_avatar'] != null)
+                      ? AssetImage(widget.carpool!['driver_avatar'])
+                      : const AssetImage('assets/images/avatar1.jpg')),
+
                         SizedBox(width: 16.w),
                         Expanded(
                           child: Column(
@@ -194,37 +212,19 @@ class _RouteMapScreenState extends State<RouteMapScreen> {
                             children: [
                               Text(
                                 widget.carpool?['title'] ?? 'Morning School Run',
-                                style: AppTextStyles.heading.copyWith(
-                                  color: const Color(0xFF0F172A),
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 18.sp,
-                                ),
-                              ),
+                                style: AppTextStyles.name),
                               SizedBox(height: 4.h),
-                              Text(
-                                'Driver: Ahmed Rahman',
-                                style: AppTextStyles.medium.copyWith(
-                                  color: const Color(0xFF64748B),
-                                  fontSize: 14.sp,
-                                ),
-                              ),
+                              Text( 'Driver: ${widget.carpool?['driver'] ?? 'Unknown Driver'}',
+                                style: AppTextStyles.school.copyWith(color: const Color(0xFF4A5565))),
                               SizedBox(height: 4.h),
                               Row(
                                 children: [
-                                  Icon(
-                                    Icons.access_time,
-                                    size: 16.sp,
-                                    color: const Color(0xFF0D9488),
-                                  ),
+                                  SvgPicture.asset('assets/icons/clock.svg', width: 16.sp, height: 16.sp,
+                                      colorFilter: const ColorFilter.mode(Color(0xFF009966), BlendMode.srcIn)),
                                   SizedBox(width: 6.w),
-                                  Text(
-                                    'Arrives in 15 minutes',
-                                    style: AppTextStyles.medium.copyWith(
-                                      color: const Color(0xFF0D9488),
-                                      fontWeight: FontWeight.w600,
-                                      fontSize: 14.sp,
-                                    ),
-                                  ),
+                                  Text( 'Arrives in 15 minutes',
+                                    style: AppTextStyles.action.copyWith(
+                                      color: const Color(0xFF009966))),
                                 ],
                               ),
                             ],
@@ -234,38 +234,22 @@ class _RouteMapScreenState extends State<RouteMapScreen> {
                     ),
                     SizedBox(height: 20.h),
                     // Track Live button
-                    SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton.icon(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF66B2A3), // Primary teal brand color
-                          foregroundColor: Colors.white,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16.r),
-                          ),
-                          padding: EdgeInsets.symmetric(vertical: 14.h),
-                          elevation: 0,
-                        ),
-                        icon: Icon(Icons.near_me_outlined, color: Colors.white, size: 20.sp),
-                        label: Text(
-                          'Track Live',
-                          style: AppTextStyles.head.copyWith(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16.sp,
-                          ),
-                        ),
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => LiveTrackingScreen(
-                                carpool: widget.carpool ?? const {},
-                              ),
+                    PrimaryButton(
+                      text: 'Track Live',
+                      textColor: Colors.white,
+                      fontWeight: FontWeight.w600,
+                      icon: SvgPicture.asset('assets/icons/send1.svg', width: 20.sp, height: 20.sp,
+                          colorFilter: const ColorFilter.mode(Colors.white, BlendMode.srcIn)),
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => LiveTrackingScreen(
+                              carpool: widget.carpool ?? const {},
                             ),
-                          );
-                        },
-                      ),
+                          ),
+                        );
+                      },
                     ),
                   ],
                 ),
@@ -285,20 +269,12 @@ class _RouteMapScreenState extends State<RouteMapScreen> {
       children: [
         Text(
           value,
-          style: AppTextStyles.large.copyWith(
-            fontWeight: FontWeight.bold,
-            color: const Color(0xFF0F172A),
-            fontSize: 18.sp,
-          ),
-        ),
+          style: AppTextStyles.heading),
         SizedBox(height: 2.h),
         Text(
           label,
-          style: AppTextStyles.medium.copyWith(
-            color: const Color(0xFF64748B),
-            fontSize: 12.sp,
-          ),
-        ),
+          style: AppTextStyles.notice.copyWith(
+            color: const Color(0xFF4A5565))),
       ],
     );
   }
@@ -307,20 +283,20 @@ class _RouteMapScreenState extends State<RouteMapScreen> {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        width: 44.w,
-        height: 44.w,
+        width: 48.w,
+        height: 48.w,
         decoration: BoxDecoration(
           color: Colors.white,
           shape: BoxShape.circle,
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.08),
+              color: Colors.black.withValues(alpha: 0.08),
               blurRadius: 12,
               offset: const Offset(0, 4),
             )
           ],
         ),
-        child: Icon(icon, size: 20.sp, color: const Color(0xFF0F172A)),
+        child: Icon(icon, size: 20.sp, color: const Color(0xFF364153)),
       ),
     );
   }
@@ -329,146 +305,21 @@ class _RouteMapScreenState extends State<RouteMapScreen> {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        width: 44.w,
-        height: 44.w,
+        width: 48.w,
+        height: 48.w,
         decoration: BoxDecoration(
           color: Colors.white,
           shape: BoxShape.circle,
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.08),
+              color: Colors.black.withValues(alpha: 0.08),
               blurRadius: 12,
               offset: const Offset(0, 4),
             )
           ],
         ),
-        child: Icon(icon, size: 20.sp, color: const Color(0xFF0F172A)),
+        child: Icon(icon, size: 20.sp, color: const Color(0xFF364153)),
       ),
     );
   }
-}
-
-// Custom road network and map detail painter matching the screenshot
-class _MapGridPainter extends CustomPainter {
-  final double zoomFactor;
-  final Offset offset;
-
-  _MapGridPainter({required this.zoomFactor, required this.offset});
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    // Focus translation & zoom on center of map viewport
-    final center = Offset(size.width / 2, size.height / 2);
-
-    canvas.save();
-    canvas.translate(center.dx + offset.dx, center.dy + offset.dy);
-    canvas.scale(zoomFactor);
-    canvas.translate(-center.dx, -center.dy);
-
-    // Background Grid lines
-    final gridPaint = Paint()
-      ..color = const Color(0xFFE2EAF0)
-      ..strokeWidth = 1.0;
-
-    const double gridSpacing = 40.0;
-    // Draw wide area grid
-    for (double x = -size.width; x < size.width * 2; x += gridSpacing) {
-      canvas.drawLine(Offset(x, -size.height), Offset(x, size.height * 2), gridPaint);
-    }
-    for (double y = -size.height; y < size.height * 2; y += gridSpacing) {
-      canvas.drawLine(Offset(-size.width, y), Offset(size.width * 2, y), gridPaint);
-    }
-
-    // Road styling: casing border first, then pink/beige inner fill.
-    final borderPaint = Paint()
-      ..color = const Color(0xFF94A3B8)
-      ..strokeWidth = 12.0
-      ..strokeCap = StrokeCap.round
-      ..style = PaintingStyle.stroke;
-
-    final fillPaint = Paint()
-      ..color = const Color(0xFFFEE2E2) // Light pink/beige road
-      ..strokeWidth = 8.0
-      ..strokeCap = StrokeCap.round
-      ..style = PaintingStyle.stroke;
-
-    // Define main route paths
-    final path1 = Path();
-    path1.moveTo(0, size.height * 0.15);
-    path1.quadraticBezierTo(size.width * 0.4, size.height * 0.25, size.width * 0.6, size.height * 0.6);
-    path1.quadraticBezierTo(size.width * 0.7, size.height * 0.85, size.width, size.height * 0.9);
-
-    final path2 = Path();
-    path2.moveTo(size.width * 0.1, size.height);
-    path2.quadraticBezierTo(size.width * 0.25, size.height * 0.6, size.width * 0.5, size.height * 0.45);
-    path2.quadraticBezierTo(size.width * 0.75, size.height * 0.3, size.width, size.height * 0.2);
-
-    final path3 = Path();
-    path3.moveTo(0, size.height * 0.6);
-    path3.quadraticBezierTo(size.width * 0.3, size.height * 0.5, size.width * 0.5, size.height * 0.45);
-    path3.quadraticBezierTo(size.width * 0.7, size.height * 0.4, size.width, size.height * 0.7);
-
-    final path4 = Path();
-    path4.moveTo(size.width * 0.8, 0);
-    path4.lineTo(size.width * 0.4, size.height);
-
-    // Draw borders (casing)
-    canvas.drawPath(path1, borderPaint);
-    canvas.drawPath(path2, borderPaint);
-    canvas.drawPath(path3, borderPaint);
-    canvas.drawPath(path4, borderPaint);
-
-    // Draw fills
-    canvas.drawPath(path1, fillPaint);
-    canvas.drawPath(path2, fillPaint);
-    canvas.drawPath(path3, fillPaint);
-    canvas.drawPath(path4, fillPaint);
-
-    // Intersection Nodes (circles)
-    final nodeBorderPaint = Paint()
-      ..color = const Color(0xFF94A3B8)
-      ..strokeWidth = 3.0
-      ..style = PaintingStyle.stroke;
-
-    final nodeFillPaint = Paint()
-      ..color = const Color(0xFFF1F5F9)
-      ..style = PaintingStyle.fill;
-
-    final List<Offset> intersections = [
-      Offset(size.width * 0.42, size.height * 0.32),
-      Offset(size.width * 0.59, size.height * 0.36),
-      Offset(size.width * 0.15, size.height * 0.44),
-      Offset(size.width * 0.88, size.height * 0.66),
-    ];
-
-    for (final pos in intersections) {
-      canvas.drawCircle(pos, 12.0, nodeFillPaint);
-      canvas.drawCircle(pos, 12.0, nodeBorderPaint);
-      
-      // inner pink dot
-      canvas.drawCircle(pos, 6.0, Paint()..color = const Color(0xFFFEE2E2));
-      canvas.drawCircle(pos, 6.0, Paint()..color = const Color(0xFF94A3B8)..style = PaintingStyle.stroke..strokeWidth = 2.0);
-    }
-
-    // Vehicle dots (solid blue circles)
-    final vehiclePaint = Paint()
-      ..color = const Color(0xFF3B82F6)
-      ..style = PaintingStyle.fill;
-
-    final List<Offset> vehicles = [
-      Offset(size.width * 0.35, size.height * 0.28),
-      Offset(size.width * 0.65, size.height * 0.48),
-      Offset(size.width * 0.22, size.height * 0.75),
-    ];
-
-    for (final pos in vehicles) {
-      canvas.drawCircle(pos, 5.0, vehiclePaint);
-    }
-
-    canvas.restore();
-  }
-
-  @override
-  bool shouldRepaint(covariant _MapGridPainter oldDelegate) =>
-      oldDelegate.zoomFactor != zoomFactor || oldDelegate.offset != offset;
 }

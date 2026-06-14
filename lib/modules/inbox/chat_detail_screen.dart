@@ -9,8 +9,14 @@ import 'package:flutter_svg/svg.dart';
 import 'package:image_picker/image_picker.dart';
 
 class ChatDetailScreen extends StatefulWidget {
-  final String chatName;
-  const ChatDetailScreen({super.key, required this.chatName});
+  final String? chatName;
+  final Map<String, dynamic>? chatData;
+
+  const ChatDetailScreen({
+    super.key,
+    this.chatName,
+    this.chatData
+  });
 
   @override
   State<ChatDetailScreen> createState() => _ChatDetailScreenState();
@@ -41,6 +47,15 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
       r'^(\u00a9|\u00ae|[\u2000-\u3300]|\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff]|\s)+$',
     );
     return emojiRegex.hasMatch(trimmed) && trimmed.isNotEmpty;
+  }
+
+  String get _memberCountText {
+    if (widget.chatData != null) {
+      if (widget.chatData!['isGroup'] == true && widget.chatData!.containsKey('memberCount')) {
+        return "${widget.chatData!['memberCount']} members";
+      }
+    }
+    return "";
   }
 
   @override
@@ -92,8 +107,10 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
           title: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(widget.chatName, style: AppTextStyles.message),
-              Text('3 members',
+              Text(widget.chatData?['name'] ?? widget.chatName ?? 'Chat',
+                  style: AppTextStyles.message),
+              if (_memberCountText.isNotEmpty)
+              Text(_memberCountText,
                   style: AppTextStyles.school.copyWith(color:const Color(0xFF4A5565))),
             ],
           ),

@@ -8,7 +8,7 @@ import '../../widgets/app_bottom_nav.dart';
 import '../../widgets/app_buttons.dart';
 import '../../widgets/app_snackbar.dart';
 import '../../widgets/app_text_field.dart';
-import 'checkbox_list_item.dart';
+import 'widgets/checkbox_list_item.dart';
 import 'contact_list_screen.dart';
 import 'nearby_families_screen.dart';
 

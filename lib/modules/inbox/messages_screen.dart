@@ -25,13 +25,13 @@ class _MessagesScreenState extends State<MessagesScreen>
 
   final List<Map<String, dynamic>> _chats = [
 
-    {'name': 'Morning School Run', 'msg': 'Sequi quae aliquid numquam...', 'time': '08:09 PM', 'unreadCount': 2, 'isGroup': true, 'image': 'assets/images/avatar.jpg'},
+    {'name': 'Morning School Run', 'msg': 'Sequi quae aliquid numquam...', 'time': '08:09 PM', 'unreadCount': 2, 'isGroup': true, 'image': 'assets/images/avatar.jpg','memberCount': 3},
     {'name': 'Sarah Johnson', 'msg': 'Sequi quae aliquid numquam...', 'time': '08:09 PM', 'unreadCount': 0, 'isGroup': false, 'image': 'assets/images/avatar1.jpg'},
-    {'name': 'Weekend Soccer Practice', 'msg': 'Sequi quae aliquid numquam...', 'time': '08:09 PM', 'unreadCount': 2, 'isGroup': true, 'image': 'assets/images/avatar2.jpg'},
+    {'name': 'Weekend Soccer Practice', 'msg': 'Sequi quae aliquid numquam...', 'time': '08:09 PM', 'unreadCount': 2, 'isGroup': true, 'image': 'assets/images/avatar2.jpg','memberCount': 5},
     {'name': 'Mike Thompson', 'msg': 'Sequi quae aliquid numquam...', 'time': '08:09 PM', 'unreadCount': 0, 'isGroup': false, 'image': 'assets/images/avatar3.jpg'},
-    {'name': 'Arlene McCoy', 'msg': 'Sequi quae aliquid numquam...', 'time': '08:09 PM', 'unreadCount': 0, 'isGroup': false, 'image': 'assets/images/avatar.jpg'},
+    {'name': 'Arlene McCoy', 'msg': 'Sequi quae aliquid numquam...', 'time': '08:09 PM', 'unreadCount': 0, 'isGroup': true, 'image': 'assets/images/avatar.jpg','memberCount': 12},
     {'name': 'Annette Black', 'msg': 'Sequi quae aliquid numquam...', 'time': '08:09 PM', 'unreadCount': 2, 'isGroup': false, 'image': 'assets/images/avatar1.jpg'},
-    {'name': 'Wade Warren', 'msg': 'Sequi quae aliquid numquam...', 'time': '08:09 PM', 'unreadCount': 0, 'isGroup': false, 'image': 'assets/images/avatar2.jpg'},
+    {'name': 'Wade Warren', 'msg': 'Sequi quae aliquid numquam...', 'time': '08:09 PM', 'unreadCount': 0, 'isGroup': true, 'image': 'assets/images/avatar2.jpg','memberCount': 4},
   ];
 
   final List<Map<String, dynamic>> _contactInvitations = [
@@ -134,8 +134,7 @@ class _MessagesScreenState extends State<MessagesScreen>
       fillColor: Colors.white,
       borderColor: const Color(0xFFD1D5DC),
       borderRadius: 14.r,
-      prefixIcon: SvgPicture.asset(
-          'assets/icons/search_outlined.svg', width: 20.sp, height: 20.sp,
+      prefixIcon: SvgPicture.asset('assets/icons/search_outlined.svg', width: 20.sp, height: 20.sp,
           colorFilter: const ColorFilter.mode(Color(0xFF99A1AF), BlendMode.srcIn)),
       onChanged: (value) => setState(() => _searchQuery = value),
     );
@@ -153,7 +152,7 @@ class _MessagesScreenState extends State<MessagesScreen>
           onTap: () => Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (_) => ChatDetailScreen(chatName: c['name']))),
+              builder: (_) => ChatDetailScreen(chatData: c))),
           child: Container(
             margin: EdgeInsets.only(bottom: 8.h),
             padding:

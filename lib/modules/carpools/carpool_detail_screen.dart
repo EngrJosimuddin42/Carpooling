@@ -7,7 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import '../../data/app_data.dart';
-import '../../widgets/app_bottom_nav.dart';
 import '../../widgets/app_buttons.dart';
 import '../inbox/chat_detail_screen.dart';
 import '../../widgets/custom_delete_dialog.dart';
@@ -247,7 +246,6 @@ class _CarpoolDetailScreenState extends State<CarpoolDetailScreen> {
               ],
             ),
           ),
-          bottomNavigationBar: const AppBottomNav(currentIndex: 1),
         );
       },
     );
