@@ -16,6 +16,7 @@ class PrimaryButton extends StatelessWidget {
   final Widget? icon;
   final double? height;
   final bool isUnderlined;
+  final Color? disabledBackgroundColor;
 
   const PrimaryButton({
     super.key,
@@ -28,7 +29,8 @@ class PrimaryButton extends StatelessWidget {
     this.fontSize,
     this.fontWeight,
     this.icon,
-    this.height
+    this.height,
+    this.disabledBackgroundColor,
   });
 
 
@@ -41,7 +43,7 @@ class PrimaryButton extends StatelessWidget {
         onPressed: isLoading ? null : onPressed,
         style: ElevatedButton.styleFrom(
             backgroundColor: backgroundColor ?? AppColors.primary,
-            disabledBackgroundColor: AppColors.primaryLight,
+            disabledBackgroundColor: disabledBackgroundColor ?? AppColors.primaryLight,
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.r)),
             elevation: 0),
         child: isLoading ? SizedBox(width: 22.w, height: 22.w,

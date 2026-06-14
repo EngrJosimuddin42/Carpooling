@@ -1,6 +1,7 @@
 import 'package:go_router/go_router.dart';
 import '../modules/carpools/my_carpools_screen.dart';
 import '../modules/carpools/nearby_families_screen.dart';
+import '../modules/carpools/route_map_screen.dart';
 import '../modules/child/add_your_child_screen.dart';
 import '../modules/home/home_screen.dart';
 import '../modules/inbox/messages_screen.dart';
@@ -31,6 +32,7 @@ class AppRoutes {
   static const messages       = '/messages';
   static const notifications  = '/notifications';
   static const profile        = '/profile';
+  static const routeMap       = '/route-map';
 }
 
 final appRouter = GoRouter(
@@ -50,6 +52,10 @@ final appRouter = GoRouter(
     GoRoute(path: AppRoutes.messages,       builder: (c, s) => const MessagesScreen()),
     GoRoute(path: AppRoutes.notifications,  builder: (c, s) => const NotificationsScreen()),
     GoRoute(path: AppRoutes.profile,        builder: (c, s) => const ProfileScreen()),
+    GoRoute(path: AppRoutes.routeMap,       builder: (c, s) {
+      final carpool = s.extra as Map<String, dynamic>?;
+      return RouteMapScreen(carpool: carpool);
+    }),
     GoRoute(path: AppRoutes.otp,            builder: (c, s) {
       final extra = s.extra as Map<String, dynamic>? ?? {};
       return OtpScreen(phone: extra['phone'] ?? '', isSignUp: extra['isSignUp'] ?? true);

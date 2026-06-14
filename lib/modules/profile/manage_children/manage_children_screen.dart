@@ -7,7 +7,7 @@ import '../../../data/app_data.dart';
 import '../../../models/child_model.dart';
 import '../../../theme/app_colors.dart';
 import '../../../widgets/app_bottom_nav.dart';
-import 'custom_delete_dialog.dart';
+import '../../../widgets/custom_delete_dialog.dart';
 import '../../child/child_card.dart';
 import 'add_child_screen.dart';
 import 'child_detail_screen.dart';

@@ -38,6 +38,7 @@ class AppData {
       'parents': 3,
       'children': 8,
       'driver': 'Mike Thompson',
+      'driver_avatar': 'assets/images/avatar1.jpg',
     },
     {
       'title': 'Morning School Run',
@@ -48,6 +49,7 @@ class AppData {
       'parents': 3,
       'children': 5,
       'driver': 'You',
+      'driver_avatar': 'assets/images/avatar.jpg',
     },
     {
       'title': 'After School Pickup',

@@ -136,8 +136,7 @@ class _MyCarpoolsScreenState extends State<MyCarpoolsScreen> {
       fillColor: Colors.white,
       borderColor: const Color(0xFFD1D5DC),
       borderRadius: 14.r,
-      prefixIcon: SvgPicture.asset(
-          'assets/icons/search_outlined.svg', width: 20.sp, height: 20.sp,
+      prefixIcon: SvgPicture.asset('assets/icons/search_outlined.svg', width: 20.sp, height: 20.sp,
           colorFilter: const ColorFilter.mode(Color(0xFF99A1AF), BlendMode.srcIn)),
       onChanged: (value) => setState(() => _searchQuery = value),
     );
@@ -180,8 +179,7 @@ class _MyCarpoolsScreenState extends State<MyCarpoolsScreen> {
                 color: const Color(0xFFF3F4F6),
                 borderRadius: BorderRadius.circular(10.r)),
             child: Center(
-              child: SvgPicture.asset(
-                'assets/icons/filter_alt_outlined.svg',
+              child: SvgPicture.asset('assets/icons/filter_alt_outlined.svg',
                 width: 20.sp, height: 20.sp,
                 colorFilter: const ColorFilter.mode(
                     Color(0xFF4A5565), BlendMode.srcIn),

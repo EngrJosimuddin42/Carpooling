@@ -10,7 +10,7 @@ import '../../data/app_data.dart';
 import '../../widgets/app_bottom_nav.dart';
 import '../../widgets/app_buttons.dart';
 import '../inbox/chat_detail_screen.dart';
-import '../profile/manage_children/custom_delete_dialog.dart';
+import '../../widgets/custom_delete_dialog.dart';
 import 'create_carpool_screen.dart';
 
 class CarpoolDetailScreen extends StatefulWidget {
@@ -92,6 +92,7 @@ class _CarpoolDetailScreenState extends State<CarpoolDetailScreen> {
                 final updated = Map<String, dynamic>.from(
                     AppData().carpools.value[widget.carpoolIndex]);
                 updated['driver'] = m['name'];
+                updated['driver_avatar'] = m['avatar'];
                 AppData().carpools.value[widget.carpoolIndex] = updated;
                 AppData().carpools.notifyListeners();
                 Navigator.pop(context);
@@ -355,11 +356,8 @@ class _CarpoolDetailScreenState extends State<CarpoolDetailScreen> {
 
   // ── Driver Banner ─────────────────────────────────────────────────────────
   Widget _buildDriverBanner(Map<String, dynamic> c) {
-    final driverMember = _members.firstWhere(
-          (m) => m['name'] == c['driver'],
-      orElse: () => {'name': c['driver'], 'avatar': null},
-    );
-    final driverAvatar = driverMember['avatar'] as String?;
+    final driverName = c['driver'] ?? 'Unknown';
+    final driverAvatar = c['driver_avatar'] as String?;
 
     return Column(
       children: [
@@ -378,14 +376,12 @@ class _CarpoolDetailScreenState extends State<CarpoolDetailScreen> {
                       color: const Color(0xFFDBEAFE), width: 2)),
                 child: CircleAvatar(
                   radius: 29.r,
-                  backgroundImage: driverAvatar != null
+                  backgroundImage: driverAvatar != null && driverAvatar.isNotEmpty
                       ? AssetImage(driverAvatar) as ImageProvider
                       : null,
-                  child: driverAvatar == null
-                      ? Text(
-                      (c['driver'] ?? 'Y')[0].toUpperCase(),
-                      style: AppTextStyles.medium.copyWith(
-                          color: AppColors.primary))
+                  child: (driverAvatar == null || driverAvatar.isEmpty)
+                      ? Text(driverName[0].toUpperCase(),
+                      style: AppTextStyles.medium.copyWith(color: AppColors.primary))
                       : null,
                 ),
               ),
